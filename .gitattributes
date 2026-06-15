@@ -1,0 +1,26 @@
+# 默认自动处理文本文件
+* text=auto
+
+# Java
+*.java text eol=lf
+
+# Python
+*.py text eol=lf
+
+# Shell
+*.sh text eol=lf
+
+# 配置文件
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+
+# Windows脚本
+*.bat text eol=crlf
+
+# 二进制文件
+*.jar binary
+*.png binary
+*.jpg binary
+*.zip binary
