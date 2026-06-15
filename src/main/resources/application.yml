@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: quantlab
+
+quantlab:
+  market-data:
+    exchanges:
+      - binance
+      - okx
+    default-symbol: BTCUSDT
+    binance:
+      enabled: true
+      symbols:
+        - BTCUSDT
+        - ETHUSDT
+    okx:
+      enabled: false
+      symbols:
+        - BTCUSDT
+    bybit:
+      enabled: false
+      symbols:
+        - BTCUSDT
