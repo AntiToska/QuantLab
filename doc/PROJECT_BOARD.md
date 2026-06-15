@@ -12,6 +12,11 @@ Current Milestone:
 
 Market Data Infrastructure
 
+Documentation:
+
+* `doc/DEV_LOG.md`
+* `doc/WEEKLY_REVIEW.md`
+
 ---
 
 # Backlog
