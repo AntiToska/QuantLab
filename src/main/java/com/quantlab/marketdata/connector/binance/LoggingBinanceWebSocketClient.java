@@ -2,6 +2,7 @@ package com.quantlab.marketdata.connector.binance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,6 +12,12 @@ import org.springframework.stereotype.Component;
  * 后续再接入真实 WebSocket 实现。
  */
 @Component
+@ConditionalOnProperty(
+        prefix = "quantlab.market-data.binance",
+        name = "real-client-enabled",
+        havingValue = "false",
+        matchIfMissing = true
+)
 public class LoggingBinanceWebSocketClient implements BinanceWebSocketClient {
 
     private static final Logger log = LoggerFactory.getLogger(LoggingBinanceWebSocketClient.class);

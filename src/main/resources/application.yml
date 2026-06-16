@@ -10,14 +10,20 @@ quantlab:
     default-symbol: BTCUSDT
     binance:
       enabled: true
+      ws-url: wss://stream.binance.com:9443/ws
+      real-client-enabled: false
       symbols:
         - BTCUSDT
         - ETHUSDT
     okx:
       enabled: false
+      ws-url: wss://ws.okx.com:8443/ws/v5/public
+      real-client-enabled: false
       symbols:
         - BTCUSDT
     bybit:
       enabled: false
+      ws-url: wss://stream.bybit.com/v5/public/spot
+      real-client-enabled: false
       symbols:
         - BTCUSDT

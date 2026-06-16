@@ -44,7 +44,9 @@ public record QuantLabProperties(
      */
     public record ExchangeConnectorProperties(
             boolean enabled,
-            @NotEmpty List<@NotBlank String> symbols
+            @NotEmpty List<@NotBlank String> symbols,
+            String wsUrl,
+            boolean realClientEnabled
     ) {
     }
 }

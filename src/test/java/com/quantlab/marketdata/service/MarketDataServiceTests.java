@@ -21,9 +21,24 @@ class MarketDataServiceTests {
                         new QuantLabProperties.MarketDataProperties(
                                 List.of("binance", "okx"),
                                 "BTCUSDT",
-                                new QuantLabProperties.ExchangeConnectorProperties(true, List.of("BTCUSDT", "ETHUSDT")),
-                                new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT")),
-                                new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT"))
+                                new QuantLabProperties.ExchangeConnectorProperties(
+                                        true,
+                                        List.of("BTCUSDT", "ETHUSDT"),
+                                        "wss://stream.binance.com:9443/ws",
+                                        false
+                                ),
+                                new QuantLabProperties.ExchangeConnectorProperties(
+                                        false,
+                                        List.of("BTCUSDT"),
+                                        "wss://ws.okx.com:8443/ws/v5/public",
+                                        false
+                                ),
+                                new QuantLabProperties.ExchangeConnectorProperties(
+                                        false,
+                                        List.of("BTCUSDT"),
+                                        "wss://stream.bybit.com/v5/public/spot",
+                                        false
+                                )
                         )
                 ),
                 List.of(binanceConnector, okxConnector)
@@ -45,9 +60,24 @@ class MarketDataServiceTests {
                         new QuantLabProperties.MarketDataProperties(
                                 List.of("binance"),
                                 "BTCUSDT",
-                                new QuantLabProperties.ExchangeConnectorProperties(true, List.of("BTCUSDT")),
-                                new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT")),
-                                new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT"))
+                                new QuantLabProperties.ExchangeConnectorProperties(
+                                        true,
+                                        List.of("BTCUSDT"),
+                                        "wss://stream.binance.com:9443/ws",
+                                        false
+                                ),
+                                new QuantLabProperties.ExchangeConnectorProperties(
+                                        false,
+                                        List.of("BTCUSDT"),
+                                        "wss://ws.okx.com:8443/ws/v5/public",
+                                        false
+                                ),
+                                new QuantLabProperties.ExchangeConnectorProperties(
+                                        false,
+                                        List.of("BTCUSDT"),
+                                        "wss://stream.bybit.com/v5/public/spot",
+                                        false
+                                )
                         )
                 ),
                 List.of(binanceConnector, okxConnector)
