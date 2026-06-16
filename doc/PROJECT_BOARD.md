@@ -1,6 +1,14 @@
 # QuantLab 项目看板
 
-> 项目管理看板
+> 项目的单一阶段管理文档
+
+这个文档同时承担：
+
+* 当前阶段说明
+* 下一阶段目标管理
+* 中期路线图维护
+* 任务清单维护
+* 暂缓项记录
 
 ---
 
@@ -8,98 +16,100 @@
 
 版本：`v0.1.0`
 
-当前里程碑：
+当前阶段：`Phase 1 - Market Data`
 
-`Market Data`
+当前工作重点：
 
-当前文档：
+* 打通 Binance 行情接入闭环
+* 完成统一事件模型到基础落库的衔接
+* 为后续 Backtest Core 提供可消费的数据输入
+
+最近已完成：
+
+* Spring Boot 工程骨架
+* Market Data 统一事件模型
+* Connector 生命周期管理骨架
+* Binance 消息解析与订阅建模
+* WebSocket transport 抽象
+* 真实 WebSocket 的重连、订阅重放与心跳基础能力
+* 基础测试体系与回归验证
+
+相关文档：
 
 * `doc/DEV_LOG.md`
 * `doc/WEEKLY_REVIEW.md`
+* `doc/AGENT_GUIDE.md`
 
 ---
 
-# 待办清单
+# 当前阶段目标
 
-## 基础设施
+## 阶段名称
 
-* [x] 初始化 Spring Boot 工程
-* [ ] Docker Compose 基础环境
-* [ ] PostgreSQL 部署与初始化
-* [ ] 配置管理收敛
-* [ ] 基础运行脚本与开发说明
+`Phase 1 - Market Data`
 
----
+## 阶段目标
 
-## Market Data
+先打通 Binance WebSocket、统一事件模型和基础落库，形成可归档、可回放、可供后续回测消费的数据入口。
 
-* [x] Binance WebSocket Connector 基础链路
-* [ ] Binance 真实消息消费联调
-* [x] Market Data Event Model
-* [ ] Trade 数据落库
-* [ ] Kline 数据落库
-* [ ] OrderBook Snapshot 数据落库
-* [ ] OKX WebSocket Connector
-* [ ] Bybit WebSocket Connector
+## 当前阶段范围
 
----
+本阶段应该完成：
 
-## Backtest Core
+* Binance 实时行情接入
+* Trade / Kline / OrderBook 等统一事件建模
+* 基础落库能力
+* 历史归档与回放入口的雏形
 
-* [ ] 历史数据加载器
-* [ ] 事件驱动回测循环
-* [ ] Broker Simulator
-* [ ] Position / Portfolio 演算
-* [ ] 回测结果结构化输出
+本阶段不追求：
 
----
+* 多交易所全部打通
+* 高性能分析型存储
+* 复杂缓存层
+* 分布式事件总线
 
-## Strategy + Metrics
+## 当前阶段完成标准
 
-* [ ] Strategy Interface
-* [ ] Signal Model
-* [ ] 简单均线策略
-* [ ] Momentum 策略
-* [ ] 绩效指标计算
-* [ ] Sharpe / Drawdown / WinRate 输出
+满足以下条件即可视为当前阶段完成：
+
+* 能稳定接收 Binance 实时行情
+* 能将核心行情数据写入 PostgreSQL
+* 能为后续回测提供基础历史数据输入
+* 关键链路具备基础测试和回归验证
 
 ---
 
-## AI Research
+# 下一阶段目标
 
-* [ ] 回测结果 JSON 结构定义
-* [ ] LLM 分析输入适配
-* [ ] 策略分析报告生成
-* [ ] 风险提示与优化建议输出
+## 阶段名称
 
----
+`Phase 2 - Backtest Core`
 
-## Paper Trading / Risk
+## 前置条件
 
-* [ ] 虚拟账户
-* [ ] 模拟下单与成交
-* [ ] 持仓跟踪
-* [ ] Position Limit
-* [ ] Max Drawdown Control
-* [ ] Daily Loss Limit
+进入下一阶段前，需要至少满足：
 
----
+* Market Data 基础落库已打通
+* 历史数据读取入口明确
+* 统一事件模型可以被回测模块复用
 
-## Performance Scaling
+## 下一阶段目标
 
-* [ ] ClickHouse 评估与接入
-* [ ] Kafka 事件总线评估
-* [ ] Redis 缓存 / 状态层评估
-* [ ] Prometheus / Grafana 监控接入
+先形成最小可运行的事件驱动回测闭环。
 
----
+## 下一阶段重点
 
-## Dashboard
+* 历史数据加载
+* 回测事件循环
+* Broker Simulator
+* Portfolio Engine
+* 基础回测结果输出
 
-* [ ] Equity Curve
-* [ ] Drawdown Chart
-* [ ] Position Dashboard
-* [ ] Trade History
+## 下一阶段完成标准
+
+* 至少一个简单策略可以在历史数据上运行
+* 可以稳定输出基础收益结果
+* 回测结果具备进入 `Strategy + Metrics` 和 `AI Research` 的结构化基础
 
 ---
 
@@ -220,6 +230,105 @@
 完成标准：
 
 * 在不破坏核心业务模型的前提下完成性能扩展
+
+---
+
+# Backlog
+
+## 基础设施
+
+* [x] 初始化 Spring Boot 工程
+* [ ] Docker Compose 基础环境
+* [ ] PostgreSQL 部署与初始化
+* [ ] 配置管理收敛
+* [ ] 基础运行脚本与开发说明
+
+---
+
+## Market Data
+
+* [x] Binance WebSocket Connector 基础链路
+* [ ] Binance 真实消息消费联调
+* [x] Market Data Event Model
+* [ ] Trade 数据落库
+* [ ] Kline 数据落库
+* [ ] OrderBook Snapshot 数据落库
+* [ ] OKX WebSocket Connector
+* [ ] Bybit WebSocket Connector
+
+---
+
+## Backtest Core
+
+* [ ] 历史数据加载器
+* [ ] 事件驱动回测循环
+* [ ] Broker Simulator
+* [ ] Position / Portfolio 演算
+* [ ] 回测结果结构化输出
+
+---
+
+## Strategy + Metrics
+
+* [ ] Strategy Interface
+* [ ] Signal Model
+* [ ] 简单均线策略
+* [ ] Momentum 策略
+* [ ] 绩效指标计算
+* [ ] Sharpe / Drawdown / WinRate 输出
+
+---
+
+## AI Research
+
+* [ ] 回测结果 JSON 结构定义
+* [ ] LLM 分析输入适配
+* [ ] 策略分析报告生成
+* [ ] 风险提示与优化建议输出
+
+---
+
+## Paper Trading / Risk
+
+* [ ] 虚拟账户
+* [ ] 模拟下单与成交
+* [ ] 持仓跟踪
+* [ ] Position Limit
+* [ ] Max Drawdown Control
+* [ ] Daily Loss Limit
+
+---
+
+## Performance Scaling
+
+* [ ] ClickHouse 评估与接入
+* [ ] Kafka 事件总线评估
+* [ ] Redis 缓存 / 状态层评估
+* [ ] Prometheus / Grafana 监控接入
+
+---
+
+## Dashboard
+
+* [ ] Equity Curve
+* [ ] Drawdown Chart
+* [ ] Position Dashboard
+* [ ] Trade History
+
+---
+
+# 暂缓项
+
+当前明确暂缓，不作为近期开发目标：
+
+* ClickHouse 正式接入
+* Kafka 事件总线落地
+* Redis 状态层与缓存层
+* Kubernetes 与微服务拆分
+* 复杂监控平台
+* 高频场景专项优化
+
+这些方向仍然有价值，但必须放在核心业务闭环稳定之后再考虑。
 
 ---
 
