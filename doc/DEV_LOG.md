@@ -135,6 +135,7 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 将 `Kafka / Redis / ClickHouse` 调整为未来可演进技术，而不是当前技术栈承诺
 * 更新 `doc/PROJECT_BOARD.md`，使待办和路线图与当前策略一致
 * 更新 `doc/AGENT_GUIDE.md`，消除与 README 的技术选型冲突
+* 将 `OKX / Bybit` 从当前阶段主任务中降级，避免项目演化成“交易所连接器收集器”
 
 #### 4. Git 记录
 

@@ -253,8 +253,6 @@
 * [ ] Trade 数据落库
 * [ ] Kline 数据落库
 * [ ] OrderBook Snapshot 数据落库
-* [ ] OKX WebSocket Connector
-* [ ] Bybit WebSocket Connector
 
 ---
 
@@ -321,6 +319,8 @@
 
 当前明确暂缓，不作为近期开发目标：
 
+* OKX WebSocket Connector
+* Bybit WebSocket Connector
 * ClickHouse 正式接入
 * Kafka 事件总线落地
 * Redis 状态层与缓存层
@@ -328,7 +328,7 @@
 * 复杂监控平台
 * 高频场景专项优化
 
-这些方向仍然有价值，但必须放在核心业务闭环稳定之后再考虑。
+这些方向仍然有价值，但必须放在 `Binance -> PostgreSQL -> Backtest -> Strategy -> Metrics -> AI Report` 这条核心研究闭环稳定之后再考虑。
 
 ---
 
