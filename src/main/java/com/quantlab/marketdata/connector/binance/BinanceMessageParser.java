@@ -19,6 +19,9 @@ public class BinanceMessageParser {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * 解析原始 Binance JSON 文本，并按事件类型路由到对应 DTO。
+     */
     public BinancePayload parse(String payload) {
         try {
             JsonNode root = objectMapper.readTree(payload);
@@ -34,6 +37,9 @@ public class BinanceMessageParser {
         }
     }
 
+    /**
+     * 安全读取必填字段，缺失时直接抛出协议错误。
+     */
     private String text(JsonNode node, String fieldName) {
         JsonNode child = node.get(fieldName);
         if (child == null || child.isNull()) {

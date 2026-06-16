@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class BinanceSubscriptionRequestSerializer {
 
+    /**
+     * 将内部订阅请求转换成 Binance WebSocket 可直接发送的 JSON 文本。
+     */
     public String serialize(BinanceSubscriptionRequest request) {
         String params = request.params().stream()
                 .map(this::quote)
@@ -23,6 +26,9 @@ public class BinanceSubscriptionRequestSerializer {
         );
     }
 
+    /**
+     * 对字符串做最小转义，满足当前请求体序列化需求。
+     */
     private String quote(String value) {
         return "\"" + value.replace("\"", "\\\"") + "\"";
     }

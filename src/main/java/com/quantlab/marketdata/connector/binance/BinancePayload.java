@@ -9,10 +9,16 @@ public record BinancePayload(
         BinanceKlineMessage kline
 ) {
 
+    /**
+     * 构造 trade 类型载荷。
+     */
     public static BinancePayload trade(BinanceTradeMessage trade) {
         return new BinancePayload(BinanceChannel.TRADE, trade, null);
     }
 
+    /**
+     * 构造 kline 类型载荷。
+     */
     public static BinancePayload kline(BinanceKlineMessage kline) {
         return new BinancePayload(BinanceChannel.KLINE, null, kline);
     }

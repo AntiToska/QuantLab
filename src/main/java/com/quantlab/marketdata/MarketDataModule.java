@@ -20,6 +20,10 @@ public class MarketDataModule {
     }
 
     @EventListener(ApplicationReadyEvent.class)
+    /**
+     * 在应用启动后打印 Market Data 模块的基础配置，
+     * 便于快速确认当前启用了哪些交易所和默认交易对。
+     */
     public void logStartupConfiguration() {
         List<String> exchanges = properties.marketData().exchanges();
         log.info(

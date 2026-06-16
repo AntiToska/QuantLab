@@ -23,11 +23,17 @@ public abstract class AbstractMarketDataConnector implements MarketDataConnector
     }
 
     @Override
+    /**
+     * 返回当前连接器绑定的交易所。
+     */
     public Exchange exchange() {
         return exchange;
     }
 
     @Override
+    /**
+     * 基于交易所枚举做最直接的支持判断。
+     */
     public boolean supports(Exchange exchange) {
         return this.exchange == exchange;
     }
@@ -38,6 +44,7 @@ public abstract class AbstractMarketDataConnector implements MarketDataConnector
             throw new IllegalArgumentException("symbols must not be empty");
         }
 
+        // 统一做基础标准化，避免子类各自处理 symbol 大小写和空白。
         List<String> normalizedSymbols = symbols.stream()
                 .map(String::trim)
                 .map(String::toUpperCase)
@@ -46,5 +53,8 @@ public abstract class AbstractMarketDataConnector implements MarketDataConnector
         doStart(normalizedSymbols);
     }
 
+    /**
+     * 由具体交易所连接器实现真正的启动逻辑。
+     */
     protected abstract void doStart(List<String> symbols);
 }

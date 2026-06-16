@@ -12,6 +12,9 @@ public record BinanceSubscriptionRequest(
         long id
 ) {
 
+    /**
+     * 统一约束订阅请求的基本合法性，避免把无效命令传到传输层。
+     */
     public BinanceSubscriptionRequest {
         Objects.requireNonNull(method, "method must not be null");
         Objects.requireNonNull(params, "params must not be null");
@@ -28,6 +31,9 @@ public record BinanceSubscriptionRequest(
         params = List.copyOf(params);
     }
 
+    /**
+     * 构造标准 SUBSCRIBE 请求。
+     */
     public static BinanceSubscriptionRequest subscribe(List<String> streams, long id) {
         return new BinanceSubscriptionRequest("SUBSCRIBE", streams, id);
     }

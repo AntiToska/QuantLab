@@ -11,11 +11,25 @@ import java.util.List;
  */
 public interface MarketDataConnector {
 
+    /**
+     * 返回当前连接器对应的交易所。
+     */
     Exchange exchange();
 
+    /**
+     * 判断当前连接器是否支持给定交易所。
+     * <p>
+     * 这个方法主要用于上层做显式判断或后续扩展更灵活的注册机制。
+     */
     boolean supports(Exchange exchange);
 
+    /**
+     * 启动连接器，并为给定交易标的建立订阅。
+     */
     void start(List<String> symbols);
 
+    /**
+     * 停止连接器并释放相关资源。
+     */
     void stop();
 }

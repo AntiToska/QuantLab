@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class BinanceStreamNameBuilder {
 
+    /**
+     * 为每个 symbol 生成默认订阅的 stream 列表。
+     * <p>
+     * 当前默认订阅 trade 和 1 分钟 K 线，后续新增频道时优先扩展这里。
+     */
     public List<String> buildDefaultStreams(List<String> symbols) {
         return symbols.stream()
                 .map(this::normalizeSymbol)
@@ -22,6 +27,9 @@ public class BinanceStreamNameBuilder {
                 .toList();
     }
 
+    /**
+     * Binance stream 名称要求 symbol 使用小写。
+     */
     private String normalizeSymbol(String symbol) {
         return symbol.trim().toLowerCase(Locale.ROOT);
     }

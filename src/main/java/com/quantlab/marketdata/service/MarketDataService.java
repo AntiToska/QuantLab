@@ -32,6 +32,15 @@ public class MarketDataService {
     }
 
     @EventListener(ApplicationReadyEvent.class)
+    /**
+     * 应用启动完成后，按配置拉起已启用的市场数据连接器。
+     * <p>
+     * 当前的流程是：
+     * 1. 读取启用的交易所列表
+     * 2. 获取该交易所的连接器配置
+     * 3. 找到对应连接器实现
+     * 4. 用配置中的 symbols 启动连接器
+     */
     public void startEnabledConnectors() {
         for (String exchangeName : properties.marketData().exchanges()) {
             Exchange exchange = Exchange.fromValue(exchangeName);
@@ -55,10 +64,16 @@ public class MarketDataService {
     }
 
     @PreDestroy
+    /**
+     * 应用关闭前统一停止所有连接器。
+     */
     public void stopAllConnectors() {
         connectors.values().forEach(MarketDataConnector::stop);
     }
 
+    /**
+     * 把连接器列表按交易所索引，便于后续快速查找。
+     */
     private Map<Exchange, MarketDataConnector> indexConnectors(List<MarketDataConnector> connectors) {
         Map<Exchange, MarketDataConnector> connectorMap = new EnumMap<>(Exchange.class);
         for (MarketDataConnector connector : connectors) {

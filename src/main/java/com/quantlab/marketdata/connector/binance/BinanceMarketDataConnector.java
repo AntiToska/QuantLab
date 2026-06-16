@@ -41,6 +41,7 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
 
     @Override
     protected void doStart(List<String> symbols) {
+        // 先建立传输层会话，再发送当前批次的订阅请求。
         activeSession = webSocketClient.connect(new BinanceConnectorListener());
         sessionState = activeSession.state();
         lastSubscriptionRequest = BinanceSubscriptionRequest.subscribe(
@@ -58,6 +59,7 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
     @Override
     public void stop() {
         if (activeSession != null) {
+            // 关闭时主动释放旧会话引用，避免后续误用失效连接。
             activeSession.close();
             activeSession = null;
         }
@@ -92,6 +94,12 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
         return sessionState;
     }
 
+    /**
+     * 传输层事件监听器。
+     * <p>
+     * 这一层负责把 WebSocket 生命周期事件收口到连接器内部，
+     * 让底层 client 不需要理解业务处理细节。
+     */
     private final class BinanceConnectorListener implements BinanceWebSocketListener {
 
         @Override
@@ -107,6 +115,7 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
         @Override
         public void onClosed() {
             sessionState = BinanceSessionState.CLOSED;
+            activeSession = null;
             log.info("Binance WebSocket session closed.");
         }
     }
