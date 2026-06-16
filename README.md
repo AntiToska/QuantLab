@@ -1,370 +1,231 @@
 # QuantLab
 
-> A Quantitative Research & Backtesting Platform for Individual Developers
+> 面向个人开发者的量化研究与回测平台
 
-QuantLab 是一个面向个人开发者和量化交易爱好者的量化研究平台。
+QuantLab 是一个以学习和工程实践为导向的个人量化项目。
 
-项目聚焦于：
+它的目标不是做“自动赚钱机器人”，而是逐步构建一套具备真实工程价值的量化研究平台，重点覆盖：
 
 * 实时行情采集
-* 历史数据管理
-* 策略开发
+* 事件驱动架构
+* 历史数据归档
 * 回测引擎
-* 模拟交易
-* 风险控制
-* 策略分析
+* 策略开发
+* 模拟交易与风控
 * AI 辅助研究
 
-目标不是提供自动赚钱机器人，而是构建一个具备真实工程价值的量化研究平台。
+---
+
+## 项目定位
+
+很多开源量化项目要么停留在简单示例，要么过早堆复杂基础设施，导致个人开发者很难持续推进。
+
+QuantLab 采用更适合个人项目的路线：
+
+1. 先打通最小可运行闭环
+2. 先保证模型、流程和边界清晰
+3. 再逐步扩展性能、存储和多交易所能力
+
+这个项目更关注：
+
+* 是否能稳定采集和消费行情事件
+* 是否能用统一模型串起实时链路与回测链路
+* 是否能形成可分析、可展示、可演进的研究工作流
 
 ---
 
-## Why QuantLab
+## 当前阶段的核心技术
 
-大多数开源量化项目存在以下问题：
-
-* 仅支持简单回测
-* 缺少完整风控体系
-* 缺少实时数据处理能力
-* 无法模拟真实交易环境
-* 工程架构较弱
-
-QuantLab 希望提供：
-
-```text
-Market Data
-     ↓
-Strategy
-     ↓
-Backtest
-     ↓
-Risk Control
-     ↓
-Paper Trading
-     ↓
-Analytics
-```
-
-完整的量化研究工作流。
-
----
-
-## Core Features
-
-### Market Data
-
-实时行情采集
-
-支持：
-
-* Binance
-* OKX
-* Bybit
-
-功能：
-
-* WebSocket 实时订阅
-* K线数据
-* Trade 数据
-* OrderBook 数据
-* Tick 数据
-
----
-
-### Historical Data Storage
-
-统一历史数据存储。
-
-支持：
-
-* ClickHouse
-* PostgreSQL
-
-数据类型：
-
-* OHLCV
-* Trades
-* OrderBook Snapshot
-* Funding Rate
-
----
-
-### Strategy Framework
-
-统一策略开发接口。
-
-示例：
-
-```java
-public interface Strategy {
-
-    Signal onBar(BarData bar);
-
-}
-```
-
-支持：
-
-* Moving Average
-* Momentum
-* Grid Trading
-* Mean Reversion
-
-后续支持：
-
-* Multi-Factor
-* Machine Learning
-* Reinforcement Learning
-
----
-
-### Backtesting Engine
-
-支持：
-
-* 单资产回测
-* 多资产回测
-* 手续费模拟
-* 滑点模拟
-* 仓位管理
-
-输出指标：
-
-* PnL
-* Annual Return
-* Sharpe Ratio
-* Max Drawdown
-* Win Rate
-
----
-
-### Risk Management
-
-风控模块。
-
-支持：
-
-* 最大仓位限制
-* 最大回撤限制
-* 单日亏损限制
-* 熔断机制
-* 杠杆限制
-
----
-
-### Paper Trading
-
-模拟交易系统。
-
-支持：
-
-* 虚拟账户
-* 实时行情驱动
-* 模拟成交
-* 持仓管理
-* 资金管理
-
-目标：
-
-在真实市场环境下验证策略。
-
----
-
-### Analytics Dashboard
-
-策略分析面板。
-
-展示：
-
-* 资金曲线
-* 回撤曲线
-* 持仓变化
-* 收益统计
-* 风险指标
-
----
-
-### AI Research Assistant
-
-未来规划。
-
-结合 LLM：
-
-* 策略解释
-* 回测分析
-* 风险诊断
-* 策略生成建议
-
-支持：
-
-* OpenAI
-* Claude
-* DeepSeek
-* Dify
-
----
-
-## Project Structure
-
-```text
-quantlab
-│
-├── market-data
-│   ├── websocket
-│   ├── collector
-│   └── storage
-│
-├── strategy
-│   ├── ma-cross
-│   ├── momentum
-│   ├── grid
-│   └── mean-reversion
-│
-├── backtest
-│   ├── engine
-│   ├── broker
-│   └── portfolio
-│
-├── risk
-│   ├── exposure
-│   ├── stop-loss
-│   └── circuit-breaker
-│
-├── simulator
-│   └── paper-trading
-│
-├── analytics
-│   ├── pnl
-│   ├── sharpe
-│   └── drawdown
-│
-├── dashboard
-│
-└── ai-assistant
-```
-
----
-
-## Technology Stack
-
-Backend
+当前明确采用的技术：
 
 * Java 21
 * Spring Boot 3
-
-Data
-
-* ClickHouse
 * PostgreSQL
-* Redis
+* WebSocket
+* JUnit 5
 
-Messaging
+当前阶段刻意不引入：
 
 * Kafka
+* Redis
+* ClickHouse
 
-Infrastructure
+这些技术不是永远不用，而是暂时不作为当前里程碑的落地范围。现阶段更重要的是先完成功能闭环，而不是过早优化架构复杂度。
 
-* Docker
-* Docker Compose
+---
 
-Monitoring
+## 未来可演进技术
 
+在后续需要扩展吞吐、缓存、分析能力时，可以再评估：
+
+* ClickHouse
+* Kafka
+* Redis
 * Prometheus
 * Grafana
 
-AI
-
-* OpenAI Compatible API
-* Dify
+这些都属于后续性能与基础设施扩展项，不属于当前 MVP 的前置要求。
 
 ---
 
-## Roadmap
+## 核心能力规划
 
-### Phase 1
+### 1. Market Data
 
-Market Data Infrastructure
+先打通交易所行情接入与内部标准化事件流。
 
-* [ ] Binance WebSocket
-* [ ] OKX WebSocket
-* [ ] ClickHouse Storage
+当前重点：
+
+* Binance WebSocket 接入
+* Trade / Kline / OrderBook 等统一事件模型
+* 基础行情归档
+* 多交易所扩展边界预留
+
+### 2. Backtest Core
+
+先完成最小可运行回测闭环。
+
+目标包括：
+
+* 历史数据加载
+* 事件驱动回测循环
+* 基础撮合与持仓演算
+* 回测结果输出
+
+### 3. Strategy + Metrics
+
+先具备最基础的策略执行与绩效分析能力。
+
+目标包括：
+
+* 统一策略接口
+* 简单示例策略
+* 收益、回撤、Sharpe、胜率等指标
+* 结构化结果输出
+
+### 4. AI Research
+
+尽早把 AI 放进研究链路，而不是最后再补一个“助手外壳”。
+
+最小版本目标：
+
+* 接收回测结果 JSON
+* 调用 LLM 生成策略分析报告
+* 输出风险提示与优化建议
+
+示例输入：
+
+```json
+{
+  "sharpe": 1.5,
+  "maxDrawdown": 12,
+  "winRate": 48
+}
+```
+
+示例输出方向：
+
+* 策略收益较稳定
+* 最大回撤略高
+* 建议增加止损约束或优化仓位控制
+
+### 5. Paper Trading / Risk
+
+在回测和策略分析稳定后，再推进更接近真实运行环境的能力。
+
+目标包括：
+
+* 虚拟账户
+* 模拟下单与成交
+* 持仓跟踪
+* 风控规则
+
+### 6. Performance Scaling
+
+性能扩展放在后面做，而不是一开始就让项目被基础设施复杂度拖住。
+
+可能的扩展方向：
+
+* ClickHouse 分析型存储
+* Kafka 事件总线
+* Redis 缓存与状态加速
+* 更完整的监控与指标体系
 
 ---
 
-### Phase 2
+## 推荐实现路线
 
-Backtesting Engine
+当前建议按下面的顺序推进：
 
-* [ ] Event Engine
-* [ ] Broker Simulator
-* [ ] Portfolio Engine
-
----
-
-### Phase 3
-
-Strategy Framework
-
-* [ ] MA Strategy
-* [ ] Grid Strategy
-* [ ] Momentum Strategy
-
----
-
-### Phase 4
-
-Risk Management
-
-* [ ] Position Limit
-* [ ] Drawdown Limit
-* [ ] Daily Loss Limit
+1. Market Data
+   先打通 Binance WebSocket、事件模型、基础落库。
+2. Backtest Core
+   先做最小回测闭环，能消费历史/归档数据。
+3. Strategy + Metrics
+   先有简单策略、绩效指标、结果结构化输出。
+4. AI Research
+   基于回测结果做 LLM 报告生成与分析建议。
+5. Paper Trading / Risk
+   再往仿真交易和风控推进。
+6. Performance Scaling
+   最后再考虑 ClickHouse、Kafka、Redis 这类扩展。
 
 ---
 
-### Phase 5
+## 项目结构
 
-Paper Trading
+当前代码采用单体工程逐步演进，核心包结构如下：
 
-* [ ] Virtual Account
-* [ ] Real-time Simulation
-* [ ] Performance Tracking
+```text
+com.quantlab
+├── common
+├── marketdata
+├── strategy
+├── backtest
+├── risk
+├── simulator
+└── analytics
+```
 
----
+设计原则：
 
-### Phase 6
-
-Analytics Dashboard
-
-* [ ] Equity Curve
-* [ ] Risk Report
-* [ ] Strategy Comparison
-
----
-
-### Phase 7
-
-AI Assistant
-
-* [ ] Strategy Explanation
-* [ ] Backtest Analysis
-* [ ] Strategy Optimization Suggestions
+* 先按领域边界拆包
+* 先保证模块职责清晰
+* 暂不为了“看起来高级”而过早拆成多仓或微服务
 
 ---
 
-## Long-Term Vision
+## 当前进展
 
-QuantLab 的长期目标不是成为交易机器人。
+已完成的基础工作包括：
 
-而是成为：
+* Spring Boot 工程骨架
+* Market Data 统一事件模型
+* Connector 生命周期管理骨架
+* Binance 消息解析与订阅建模
+* WebSocket transport 抽象
+* 真实 WebSocket 的重连、订阅重放与心跳基础能力
+* 基础测试体系
 
-> A Personal Quantitative Research Platform
+项目开发记录见：
 
-帮助开发者学习：
+* [开发日志](doc/DEV_LOG.md)
+* [周报](doc/WEEKLY_REVIEW.md)
+* [项目看板](doc/PROJECT_BOARD.md)
+* [Agent 开发约束](doc/AGENT_GUIDE.md)
 
-* Quantitative Trading
-* Event-Driven Architecture
-* Real-Time Data Processing
-* Risk Management
-* AI-Assisted Research
+---
 
-同时构建具有真实工程价值的开源项目。
+## 长期目标
+
+QuantLab 的长期目标不是成为真实资金交易机器人，而是成为一套适合个人开发者持续打磨的量化研究平台。
+
+它希望帮助开发者同时学习和实践：
+
+* 量化系统设计
+* 事件驱动架构
+* 实时数据处理
+* 回测与仿真交易
+* AI 辅助研究能力
+
+最终形成一个既能展示工程能力，也能展示研究能力的完整项目。

@@ -1,8 +1,8 @@
 # QuantLab Agent Guide
 
-> Instructions for AI Coding Agents
+> Instructions for AI coding agents
 
-This document defines the development rules for all AI coding agents working on QuantLab.
+This document defines the delivery rules for all AI coding agents working on QuantLab.
 
 Applicable to:
 
@@ -17,15 +17,15 @@ Applicable to:
 
 # Project Vision
 
-QuantLab is a quantitative research platform.
+QuantLab is a personal quantitative research platform.
 
 Primary goals:
 
-* Learn quantitative trading systems
+* Learn quantitative trading system design
 * Practice event-driven architecture
 * Build a production-style backend project
 * Support backtesting and paper trading
-* Explore AI-assisted quantitative research
+* Explore AI-assisted quantitative research early
 
 This project is NOT intended to become a real-money trading bot.
 
@@ -35,7 +35,7 @@ Engineering quality is more important than trading profitability.
 
 # Development Philosophy
 
-Priority Order:
+Priority order:
 
 ```text
 Readability
@@ -57,7 +57,7 @@ Build working systems first.
 
 ## Event Driven
 
-Core modules communicate through events.
+Core modules should communicate through events.
 
 Example:
 
@@ -104,7 +104,7 @@ Strategy
 ->
 Backtest
 
-Not Allowed:
+Not allowed:
 
 Strategy
 ->
@@ -131,7 +131,7 @@ Preferred features:
 * record
 * sealed interface
 * Optional
-* Stream API (moderately)
+* Stream API in moderation
 
 Avoid:
 
@@ -146,29 +146,9 @@ Spring Boot 3
 
 Preferred:
 
-Constructor Injection
+Constructor injection
 
-Example:
-
-```java
-@Service
-public class MarketDataService {
-
-    private final EventPublisher publisher;
-
-    public MarketDataService(EventPublisher publisher) {
-        this.publisher = publisher;
-    }
-
-}
-```
-
-Avoid:
-
-```java
-@Autowired
-private EventPublisher publisher;
-```
+Avoid field injection.
 
 ---
 
@@ -198,19 +178,21 @@ Maximum depth:
 
 # Database Rules
 
-Primary Database:
-
-ClickHouse
-
-Secondary Database:
+Current phase primary database:
 
 PostgreSQL
 
+Future optional database:
+
+ClickHouse
+
 Rules:
 
-* Use ClickHouse for market data
-* Use PostgreSQL for metadata
-* Do not mix responsibilities
+* Agents MUST use PostgreSQL as the default persistence target in the current phase
+* Agents MUST NOT introduce ClickHouse unless the user explicitly asks for performance-scaling work
+* Agents MUST NOT add Kafka
+* Agents MUST NOT add Redis
+* If a document mentions Kafka, Redis, or ClickHouse, treat them as future options unless the user says otherwise
 
 ---
 
@@ -222,9 +204,9 @@ SLF4J
 
 Required:
 
-* Startup logs
-* Error logs
-* Important business logs
+* startup logs
+* error logs
+* important business logs
 
 Avoid:
 
@@ -242,143 +224,44 @@ JUnit 5
 
 Minimum:
 
-* Service layer tests
-* Utility tests
+* service layer tests
+* utility tests
 
 Target:
 
-80%+ coverage for core modules
+strong coverage on core modules
 
 ---
 
 # Git Workflow
 
-Main Branch:
+Main branch:
 
-main
+`main`
 
-Feature Branch:
+Feature branch:
 
-feature/*
+`task/...`
 
-Task Branch:
-
-task/*
-
-Examples:
-
-feature/backtest-engine
-
-task/11-event-engine
-
-task/12-broker-simulator
-
-Never commit directly to main.
+Agents should commit in meaningful increments with clear messages.
 
 ---
 
-# Pull Request Rules
+# Roadmap Alignment
 
-Keep PR small.
+Agents should align implementation suggestions with this staged roadmap:
 
-Target:
+1. Market Data
+   Focus on Binance WebSocket, normalized event models, and basic persistence.
+2. Backtest Core
+   Build the minimum event-driven backtest loop on historical or archived data.
+3. Strategy + Metrics
+   Add simple strategies, performance metrics, and structured outputs.
+4. AI Research
+   Add LLM-based analysis for backtest outputs and report generation early.
+5. Paper Trading / Risk
+   Extend into simulated execution and risk controls after the core loop is stable.
+6. Performance Scaling
+   Consider ClickHouse, Kafka, Redis, and heavier infrastructure only after the earlier phases are working.
 
-< 20 files changed
-
-Preferred:
-
-< 500 lines changed
-
-Avoid giant PRs.
-
----
-
-# Agent Restrictions
-
-Agents MUST NOT:
-
-* Introduce new frameworks
-* Change database technology
-* Change package structure
-* Introduce microservices
-* Add Kafka
-* Add Kubernetes
-* Add Redis
-
-Unless explicitly requested.
-
-QuantLab starts as a modular monolith.
-
----
-
-# Current Technical Scope
-
-Allowed:
-
-* Spring Boot
-* ClickHouse
-* PostgreSQL
-* Docker
-
-Not Yet Allowed:
-
-* Kafka
-* Redis
-* Elasticsearch
-* Kubernetes
-
-Keep architecture simple.
-
----
-
-# Documentation Rules
-
-Every major feature requires:
-
-* Design Description
-* Sequence Diagram
-* Usage Example
-
-Location:
-
-docs/
-
----
-
-# Milestone Development Strategy
-
-Before writing code:
-
-1. Understand milestone goal
-2. Create implementation plan
-3. Identify affected modules
-4. Generate tests
-5. Implement feature
-6. Update documentation
-
----
-
-# Definition of Done
-
-A task is complete only if:
-
-* Code compiles
-* Tests pass
-* Documentation updated
-* No TODO left behind
-* No dead code
-* No commented-out code
-
----
-
-# Long-Term Goal
-
-Build a clean and extensible quantitative research platform.
-
-Do not optimize for speed of development.
-
-Optimize for:
-
-* Maintainability
-* Learnability
-* Architecture Quality
+Agents MUST prefer simpler implementations that help complete the current phase.

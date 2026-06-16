@@ -1,82 +1,96 @@
-# QuantLab Project Board
+# QuantLab 项目看板
 
-> Project Management Board
+> 项目管理看板
 
 ---
 
-# Current Status
+# 当前状态
 
-Version: v0.1.0
+版本：`v0.1.0`
 
-Current Milestone:
+当前里程碑：
 
-Market Data Infrastructure
+`Market Data`
 
-Documentation:
+当前文档：
 
 * `doc/DEV_LOG.md`
 * `doc/WEEKLY_REVIEW.md`
 
 ---
 
-# Backlog
+# 待办清单
 
-## Infrastructure
+## 基础设施
 
-* [ ] Initialize Spring Boot Project
-* [ ] Docker Compose Environment
-* [ ] ClickHouse Deployment
-* [ ] PostgreSQL Deployment
-* [ ] Configuration Management
+* [x] 初始化 Spring Boot 工程
+* [ ] Docker Compose 基础环境
+* [ ] PostgreSQL 部署与初始化
+* [ ] 配置管理收敛
+* [ ] 基础运行脚本与开发说明
 
 ---
 
 ## Market Data
 
-* [ ] Binance WebSocket Connector
+* [x] Binance WebSocket Connector 基础链路
+* [ ] Binance 真实消息消费联调
+* [x] Market Data Event Model
+* [ ] Trade 数据落库
+* [ ] Kline 数据落库
+* [ ] OrderBook Snapshot 数据落库
 * [ ] OKX WebSocket Connector
-* [ ] Market Data Event Model
-* [ ] Tick Data Storage
-* [ ] Kline Data Storage
-* [ ] OrderBook Snapshot Storage
+* [ ] Bybit WebSocket Connector
 
 ---
 
-## Strategy Framework
+## Backtest Core
+
+* [ ] 历史数据加载器
+* [ ] 事件驱动回测循环
+* [ ] Broker Simulator
+* [ ] Position / Portfolio 演算
+* [ ] 回测结果结构化输出
+
+---
+
+## Strategy + Metrics
 
 * [ ] Strategy Interface
 * [ ] Signal Model
-* [ ] Strategy Registry
-* [ ] Strategy Lifecycle
+* [ ] 简单均线策略
+* [ ] Momentum 策略
+* [ ] 绩效指标计算
+* [ ] Sharpe / Drawdown / WinRate 输出
 
 ---
 
-## Backtesting Engine
+## AI Research
 
-* [ ] Event Engine
-* [ ] Historical Data Loader
-* [ ] Broker Simulator
-* [ ] Position Management
-* [ ] Portfolio Engine
-* [ ] Performance Metrics
+* [ ] 回测结果 JSON 结构定义
+* [ ] LLM 分析输入适配
+* [ ] 策略分析报告生成
+* [ ] 风险提示与优化建议输出
 
 ---
 
-## Risk Management
+## Paper Trading / Risk
 
+* [ ] 虚拟账户
+* [ ] 模拟下单与成交
+* [ ] 持仓跟踪
 * [ ] Position Limit
 * [ ] Max Drawdown Control
 * [ ] Daily Loss Limit
-* [ ] Risk Alert
 
 ---
 
-## Paper Trading
+## Performance Scaling
 
-* [ ] Virtual Account
-* [ ] Order Simulator
-* [ ] Position Tracking
-* [ ] Real-Time Trading Loop
+* [ ] ClickHouse 评估与接入
+* [ ] Kafka 事件总线评估
+* [ ] Redis 缓存 / 状态层评估
+* [ ] Prometheus / Grafana 监控接入
 
 ---
 
@@ -89,135 +103,135 @@ Documentation:
 
 ---
 
-## AI Assistant
+# 路线图
 
-* [ ] Strategy Explanation
-* [ ] Backtest Report Analysis
-* [ ] Risk Diagnosis
-* [ ] Strategy Suggestion
+## Phase 1: Market Data
 
----
+目标：
 
-# Milestone 1
+先打通 Binance WebSocket、统一事件模型和基础落库。
 
-Market Data Infrastructure
+任务：
 
-Goal:
+* [x] Binance WebSocket 基础接入
+* [x] 统一行情事件模型
+* [ ] PostgreSQL 基础落库
+* [ ] 历史归档与回放入口
 
-Build a stable market data collection system.
+完成标准：
 
-Tasks:
-
-* [ ] Binance WebSocket
-* [ ] Event Model
-* [ ] ClickHouse Storage
-* [ ] Historical Replay
-
-Exit Criteria:
-
-* Real-time market data can be collected
-* Data can be persisted
-* Historical data can be queried
+* 可以采集实时行情
+* 可以将核心数据归档
+* 可以为后续回测提供输入
 
 ---
 
-# Milestone 2
+## Phase 2: Backtest Core
 
-Backtesting Engine
+目标：
 
-Goal:
+先形成最小可运行的事件驱动回测闭环。
 
-Build a generic event-driven backtest engine.
+任务：
 
-Tasks:
-
-* [ ] Event Engine
+* [ ] 历史数据加载
+* [ ] 回测事件循环
 * [ ] Broker Simulator
 * [ ] Portfolio Engine
-* [ ] Metrics Engine
 
-Exit Criteria:
+完成标准：
 
-* Strategy can run on historical data
-* Metrics can be generated
-
----
-
-# Milestone 3
-
-Strategy Framework
-
-Goal:
-
-Provide pluggable strategy architecture.
-
-Tasks:
-
-* [ ] Strategy Interface
-* [ ] MA Strategy
-* [ ] Momentum Strategy
-* [ ] Grid Strategy
-
-Exit Criteria:
-
-* Multiple strategies supported
+* 策略能在历史数据上运行
+* 基础收益结果可以输出
 
 ---
 
-# Milestone 4
+## Phase 3: Strategy + Metrics
 
-Paper Trading
+目标：
 
-Goal:
+补齐最小策略层与绩效指标层。
 
-Validate strategies in live market environments.
+任务：
 
-Tasks:
+* [ ] 统一策略接口
+* [ ] 示例策略
+* [ ] Sharpe / Drawdown / WinRate
+* [ ] 结构化回测结果输出
 
-* [ ] Virtual Trading
-* [ ] Position Tracking
-* [ ] Risk Control
+完成标准：
 
-Exit Criteria:
-
-* Simulated trading can run continuously
-
----
-
-# Milestone 5
-
-QuantLab MVP
-
-Goal:
-
-Release first usable version.
-
-Tasks:
-
-* [ ] Dashboard
-* [ ] Risk Module
-* [ ] Documentation
-* [ ] Deployment Guide
-
-Exit Criteria:
-
-* Public GitHub Release
-* Version v1.0.0
-* Complete README
-* Docker Deployment
-* Sample Strategy Included
+* 至少一个示例策略可运行
+* 可以稳定输出结构化绩效结果
 
 ---
 
-# Future Ideas
+## Phase 4: AI Research
 
-* Multi-Asset Portfolio
-* Futures Trading
-* Funding Rate Strategy
-* Factor Research Platform
-* AI Strategy Assistant
-* Reinforcement Learning
-* Multi-Exchange Arbitrage
-* Market Making Simulator
-* OrderBook Replay System
-* High Frequency Research Toolkit
+目标：
+
+基于回测结果做 LLM 分析与报告生成。
+
+任务：
+
+* [ ] 回测结果 JSON 输出协议
+* [ ] LLM 分析输入
+* [ ] 中文分析报告生成
+* [ ] 风险与优化建议生成
+
+完成标准：
+
+* 输入回测结果后可自动生成研究报告
+
+---
+
+## Phase 5: Paper Trading / Risk
+
+目标：
+
+将策略推进到仿真交易与基础风控阶段。
+
+任务：
+
+* [ ] 虚拟账户
+* [ ] 实时模拟交易
+* [ ] 持仓跟踪
+* [ ] 风控规则
+
+完成标准：
+
+* 可持续运行模拟交易闭环
+
+---
+
+## Phase 6: Performance Scaling
+
+目标：
+
+在前面能力稳定后，再推进基础设施扩展。
+
+任务：
+
+* [ ] ClickHouse 分析型存储
+* [ ] Kafka 事件总线
+* [ ] Redis 缓存层
+* [ ] 监控指标体系
+
+完成标准：
+
+* 在不破坏核心业务模型的前提下完成性能扩展
+
+---
+
+# 后续想法
+
+* 多资产组合回测
+* 期货与永续合约支持
+* Funding Rate 策略
+* 因子研究平台
+* AI 策略分析助手
+* 强化学习研究
+* 跨交易所套利
+* 做市仿真
+* OrderBook 回放系统
+* 高频研究工具链
