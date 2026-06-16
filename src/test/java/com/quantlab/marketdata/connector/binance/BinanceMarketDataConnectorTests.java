@@ -9,7 +9,6 @@ import com.quantlab.marketdata.model.TradeEvent;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 class BinanceMarketDataConnectorTests {
@@ -38,6 +37,7 @@ class BinanceMarketDataConnectorTests {
                 "ethusdt@kline_1m"
         );
         assertThat(webSocketClient.session.sentRequests).containsExactly(request);
+        assertThat(connector.sessionState()).isEqualTo(BinanceSessionState.OPEN);
     }
 
     @Test
@@ -67,6 +67,27 @@ class BinanceMarketDataConnectorTests {
         connector.stop();
 
         assertThat(webSocketClient.session.closed).isTrue();
+        assertThat(connector.sessionState()).isEqualTo(BinanceSessionState.CLOSED);
+    }
+
+    @Test
+    void shouldPublishMappedEventWhenClientListenerReceivesMessage() {
+        connector.start(List.of("BTCUSDT"));
+
+        webSocketClient.listener.onMessage("""
+                {
+                  "e": "trade",
+                  "E": 1718506800000,
+                  "s": "BTCUSDT",
+                  "t": 10001,
+                  "p": "105000.12",
+                  "q": "0.010",
+                  "m": false
+                }
+                """);
+
+        assertThat(publisher.events).hasSize(1);
+        assertThat(publisher.events.getFirst()).isInstanceOf(TradeEvent.class);
     }
 
     private static final class RecordingPublisher implements MarketDataEventPublisher {
@@ -82,11 +103,11 @@ class BinanceMarketDataConnectorTests {
     private static final class RecordingWebSocketClient implements BinanceWebSocketClient {
 
         private final RecordingSession session = new RecordingSession();
-        private Consumer<String> messageHandler;
+        private BinanceWebSocketListener listener;
 
         @Override
-        public BinanceWebSocketSession connect(Consumer<String> messageHandler) {
-            this.messageHandler = messageHandler;
+        public BinanceWebSocketSession connect(BinanceWebSocketListener listener) {
+            this.listener = listener;
             return session;
         }
     }

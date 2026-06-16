@@ -1,6 +1,4 @@
 package com.quantlab.marketdata.connector.binance;
-
-import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,18 +20,23 @@ public class LoggingBinanceWebSocketClient implements BinanceWebSocketClient {
     }
 
     @Override
-    public BinanceWebSocketSession connect(Consumer<String> messageHandler) {
+    public BinanceWebSocketSession connect(BinanceWebSocketListener listener) {
         log.info("Opening stub Binance WebSocket session.");
-        return new LoggingBinanceWebSocketSession(serializer);
+        return new LoggingBinanceWebSocketSession(serializer, listener);
     }
 
     private static final class LoggingBinanceWebSocketSession implements BinanceWebSocketSession {
 
         private final BinanceSubscriptionRequestSerializer serializer;
+        private final BinanceWebSocketListener listener;
         private BinanceSessionState state = BinanceSessionState.OPEN;
 
-        private LoggingBinanceWebSocketSession(BinanceSubscriptionRequestSerializer serializer) {
+        private LoggingBinanceWebSocketSession(
+                BinanceSubscriptionRequestSerializer serializer,
+                BinanceWebSocketListener listener
+        ) {
             this.serializer = serializer;
+            this.listener = listener;
         }
 
         @Override
@@ -49,6 +52,7 @@ public class LoggingBinanceWebSocketClient implements BinanceWebSocketClient {
         @Override
         public void close() {
             state = BinanceSessionState.CLOSED;
+            listener.onClosed();
             log.info("Closing stub Binance WebSocket session.");
         }
     }

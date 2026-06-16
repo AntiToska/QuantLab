@@ -23,6 +23,7 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
     private final BinanceWebSocketClient webSocketClient;
     private BinanceSubscriptionRequest lastSubscriptionRequest;
     private BinanceWebSocketSession activeSession;
+    private BinanceSessionState sessionState = BinanceSessionState.CLOSED;
 
     public BinanceMarketDataConnector(
             MarketDataEventPublisher eventPublisher,
@@ -40,7 +41,8 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
 
     @Override
     protected void doStart(List<String> symbols) {
-        activeSession = webSocketClient.connect(payload -> handleMessage(payload, Instant.now()));
+        activeSession = webSocketClient.connect(new BinanceConnectorListener());
+        sessionState = activeSession.state();
         lastSubscriptionRequest = BinanceSubscriptionRequest.subscribe(
                 streamNameBuilder.buildDefaultStreams(symbols),
                 1L
@@ -59,6 +61,7 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
             activeSession.close();
             activeSession = null;
         }
+        sessionState = BinanceSessionState.CLOSED;
         log.info("Stopping Binance market data connector.");
     }
 
@@ -80,5 +83,31 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
      */
     public BinanceSubscriptionRequest lastSubscriptionRequest() {
         return lastSubscriptionRequest;
+    }
+
+    /**
+     * 返回当前连接器视角下的会话状态。
+     */
+    public BinanceSessionState sessionState() {
+        return sessionState;
+    }
+
+    private final class BinanceConnectorListener implements BinanceWebSocketListener {
+
+        @Override
+        public void onMessage(String payload) {
+            handleMessage(payload, Instant.now());
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            log.error("Binance WebSocket error.", throwable);
+        }
+
+        @Override
+        public void onClosed() {
+            sessionState = BinanceSessionState.CLOSED;
+            log.info("Binance WebSocket session closed.");
+        }
     }
 }
