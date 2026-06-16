@@ -30,6 +30,11 @@ public class JdkBinanceRawWebSocketFactory implements BinanceRawWebSocketFactory
             }
 
             @Override
+            public void sendPing() {
+                webSocket.sendPing(ByteBuffer.wrap(new byte[]{1})).join();
+            }
+
+            @Override
             public void abort() {
                 webSocket.abort();
             }

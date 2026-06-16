@@ -10,5 +10,7 @@ public interface BinanceRawWebSocket {
 
     void sendText(String payload);
 
+    void sendPing();
+
     void abort();
 }

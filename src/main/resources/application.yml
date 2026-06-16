@@ -12,6 +12,8 @@ quantlab:
       enabled: true
       ws-url: wss://stream.binance.com:9443/ws
       real-client-enabled: false
+      reconnect-delay-millis: 3000
+      heartbeat-interval-seconds: 15
       symbols:
         - BTCUSDT
         - ETHUSDT
@@ -19,11 +21,15 @@ quantlab:
       enabled: false
       ws-url: wss://ws.okx.com:8443/ws/v5/public
       real-client-enabled: false
+      reconnect-delay-millis: 3000
+      heartbeat-interval-seconds: 15
       symbols:
         - BTCUSDT
     bybit:
       enabled: false
       ws-url: wss://stream.bybit.com/v5/public/spot
       real-client-enabled: false
+      reconnect-delay-millis: 3000
+      heartbeat-interval-seconds: 15
       symbols:
         - BTCUSDT

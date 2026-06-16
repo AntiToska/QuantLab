@@ -25,19 +25,25 @@ class MarketDataServiceTests {
                                         true,
                                         List.of("BTCUSDT", "ETHUSDT"),
                                         "wss://stream.binance.com:9443/ws",
-                                        false
+                                        false,
+                                        3000,
+                                        15
                                 ),
                                 new QuantLabProperties.ExchangeConnectorProperties(
                                         false,
                                         List.of("BTCUSDT"),
                                         "wss://ws.okx.com:8443/ws/v5/public",
-                                        false
+                                        false,
+                                        3000,
+                                        15
                                 ),
                                 new QuantLabProperties.ExchangeConnectorProperties(
                                         false,
                                         List.of("BTCUSDT"),
                                         "wss://stream.bybit.com/v5/public/spot",
-                                        false
+                                        false,
+                                        3000,
+                                        15
                                 )
                         )
                 ),
@@ -64,19 +70,25 @@ class MarketDataServiceTests {
                                         true,
                                         List.of("BTCUSDT"),
                                         "wss://stream.binance.com:9443/ws",
-                                        false
+                                        false,
+                                        3000,
+                                        15
                                 ),
                                 new QuantLabProperties.ExchangeConnectorProperties(
                                         false,
                                         List.of("BTCUSDT"),
                                         "wss://ws.okx.com:8443/ws/v5/public",
-                                        false
+                                        false,
+                                        3000,
+                                        15
                                 ),
                                 new QuantLabProperties.ExchangeConnectorProperties(
                                         false,
                                         List.of("BTCUSDT"),
                                         "wss://stream.bybit.com/v5/public/spot",
-                                        false
+                                        false,
+                                        3000,
+                                        15
                                 )
                         )
                 ),

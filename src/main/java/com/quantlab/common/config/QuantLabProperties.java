@@ -46,7 +46,9 @@ public record QuantLabProperties(
             boolean enabled,
             @NotEmpty List<@NotBlank String> symbols,
             String wsUrl,
-            boolean realClientEnabled
+            boolean realClientEnabled,
+            long reconnectDelayMillis,
+            long heartbeatIntervalSeconds
     ) {
     }
 }

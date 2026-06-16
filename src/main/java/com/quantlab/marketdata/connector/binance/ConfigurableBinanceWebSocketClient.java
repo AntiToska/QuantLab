@@ -1,6 +1,7 @@
 package com.quantlab.marketdata.connector.binance;
 
 import com.quantlab.common.config.QuantLabProperties;
+import java.time.Duration;
 import java.net.URI;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
@@ -22,22 +23,32 @@ public class ConfigurableBinanceWebSocketClient implements BinanceWebSocketClien
 
     private final QuantLabProperties properties;
     private final BinanceRawWebSocketFactory rawWebSocketFactory;
+    private final BinanceScheduler scheduler;
     private final BinanceSubscriptionRequestSerializer serializer;
 
     public ConfigurableBinanceWebSocketClient(
             QuantLabProperties properties,
             BinanceRawWebSocketFactory rawWebSocketFactory,
+            BinanceScheduler scheduler,
             BinanceSubscriptionRequestSerializer serializer
     ) {
         this.properties = properties;
         this.rawWebSocketFactory = rawWebSocketFactory;
+        this.scheduler = scheduler;
         this.serializer = serializer;
     }
 
     @Override
     public BinanceWebSocketSession connect(BinanceWebSocketListener listener) {
-        String wsUrl = properties.marketData().binance().wsUrl();
-        BinanceRawWebSocket rawWebSocket = rawWebSocketFactory.connect(URI.create(wsUrl), listener);
-        return new DefaultBinanceWebSocketSession(rawWebSocket, serializer);
+        QuantLabProperties.ExchangeConnectorProperties config = properties.marketData().binance();
+        return new DefaultBinanceWebSocketSession(
+                config.wsUrl(),
+                rawWebSocketFactory,
+                scheduler,
+                serializer,
+                Duration.ofMillis(config.reconnectDelayMillis()),
+                Duration.ofSeconds(config.heartbeatIntervalSeconds()),
+                listener
+        );
     }
 }
