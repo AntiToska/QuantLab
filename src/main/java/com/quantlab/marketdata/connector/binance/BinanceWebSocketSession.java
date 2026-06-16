@@ -9,5 +9,7 @@ public interface BinanceWebSocketSession {
 
     void send(BinanceSubscriptionRequest request);
 
+    BinanceSessionState state();
+
     void close();
 }

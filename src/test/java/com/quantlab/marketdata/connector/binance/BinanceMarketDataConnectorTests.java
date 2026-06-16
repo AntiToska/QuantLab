@@ -102,6 +102,11 @@ class BinanceMarketDataConnectorTests {
         }
 
         @Override
+        public BinanceSessionState state() {
+            return closed ? BinanceSessionState.CLOSED : BinanceSessionState.OPEN;
+        }
+
+        @Override
         public void close() {
             closed = true;
         }

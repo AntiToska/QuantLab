@@ -15,22 +15,40 @@ import org.springframework.stereotype.Component;
 public class LoggingBinanceWebSocketClient implements BinanceWebSocketClient {
 
     private static final Logger log = LoggerFactory.getLogger(LoggingBinanceWebSocketClient.class);
+    private final BinanceSubscriptionRequestSerializer serializer;
+
+    public LoggingBinanceWebSocketClient(BinanceSubscriptionRequestSerializer serializer) {
+        this.serializer = serializer;
+    }
 
     @Override
     public BinanceWebSocketSession connect(Consumer<String> messageHandler) {
         log.info("Opening stub Binance WebSocket session.");
-        return new LoggingBinanceWebSocketSession();
+        return new LoggingBinanceWebSocketSession(serializer);
     }
 
     private static final class LoggingBinanceWebSocketSession implements BinanceWebSocketSession {
 
+        private final BinanceSubscriptionRequestSerializer serializer;
+        private BinanceSessionState state = BinanceSessionState.OPEN;
+
+        private LoggingBinanceWebSocketSession(BinanceSubscriptionRequestSerializer serializer) {
+            this.serializer = serializer;
+        }
+
         @Override
         public void send(BinanceSubscriptionRequest request) {
-            log.info("Sending Binance subscription request. method={}, params={}", request.method(), request.params());
+            log.info("Sending Binance subscription request. payload={}", serializer.serialize(request));
+        }
+
+        @Override
+        public BinanceSessionState state() {
+            return state;
         }
 
         @Override
         public void close() {
+            state = BinanceSessionState.CLOSED;
             log.info("Closing stub Binance WebSocket session.");
         }
     }
