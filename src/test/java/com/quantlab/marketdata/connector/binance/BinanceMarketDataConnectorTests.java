@@ -9,16 +9,19 @@ import com.quantlab.marketdata.model.TradeEvent;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 class BinanceMarketDataConnectorTests {
 
     private final RecordingPublisher publisher = new RecordingPublisher();
+    private final RecordingWebSocketClient webSocketClient = new RecordingWebSocketClient();
     private final BinanceMarketDataConnector connector = new BinanceMarketDataConnector(
             publisher,
             new BinanceMessageParser(new ObjectMapper()),
             new BinanceEventMapper(),
-            new BinanceStreamNameBuilder()
+            new BinanceStreamNameBuilder(),
+            webSocketClient
     );
 
     @Test
@@ -34,6 +37,7 @@ class BinanceMarketDataConnectorTests {
                 "ethusdt@trade",
                 "ethusdt@kline_1m"
         );
+        assertThat(webSocketClient.session.sentRequests).containsExactly(request);
     }
 
     @Test
@@ -56,6 +60,15 @@ class BinanceMarketDataConnectorTests {
         assertThat(event.instrument().symbol()).isEqualTo("BTCUSDT");
     }
 
+    @Test
+    void shouldCloseActiveSessionWhenStopped() {
+        connector.start(List.of("BTCUSDT"));
+
+        connector.stop();
+
+        assertThat(webSocketClient.session.closed).isTrue();
+    }
+
     private static final class RecordingPublisher implements MarketDataEventPublisher {
 
         private final List<MarketDataEvent> events = new ArrayList<>();
@@ -63,6 +76,34 @@ class BinanceMarketDataConnectorTests {
         @Override
         public void publish(MarketDataEvent event) {
             events.add(event);
+        }
+    }
+
+    private static final class RecordingWebSocketClient implements BinanceWebSocketClient {
+
+        private final RecordingSession session = new RecordingSession();
+        private Consumer<String> messageHandler;
+
+        @Override
+        public BinanceWebSocketSession connect(Consumer<String> messageHandler) {
+            this.messageHandler = messageHandler;
+            return session;
+        }
+    }
+
+    private static final class RecordingSession implements BinanceWebSocketSession {
+
+        private final List<BinanceSubscriptionRequest> sentRequests = new ArrayList<>();
+        private boolean closed;
+
+        @Override
+        public void send(BinanceSubscriptionRequest request) {
+            sentRequests.add(request);
+        }
+
+        @Override
+        public void close() {
+            closed = true;
         }
     }
 }

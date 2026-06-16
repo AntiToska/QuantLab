@@ -20,26 +20,32 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
     private final BinanceMessageParser messageParser;
     private final BinanceEventMapper eventMapper;
     private final BinanceStreamNameBuilder streamNameBuilder;
+    private final BinanceWebSocketClient webSocketClient;
     private BinanceSubscriptionRequest lastSubscriptionRequest;
+    private BinanceWebSocketSession activeSession;
 
     public BinanceMarketDataConnector(
             MarketDataEventPublisher eventPublisher,
             BinanceMessageParser messageParser,
             BinanceEventMapper eventMapper,
-            BinanceStreamNameBuilder streamNameBuilder
+            BinanceStreamNameBuilder streamNameBuilder,
+            BinanceWebSocketClient webSocketClient
     ) {
         super(Exchange.BINANCE, eventPublisher);
         this.messageParser = messageParser;
         this.eventMapper = eventMapper;
         this.streamNameBuilder = streamNameBuilder;
+        this.webSocketClient = webSocketClient;
     }
 
     @Override
     protected void doStart(List<String> symbols) {
+        activeSession = webSocketClient.connect(payload -> handleMessage(payload, Instant.now()));
         lastSubscriptionRequest = BinanceSubscriptionRequest.subscribe(
                 streamNameBuilder.buildDefaultStreams(symbols),
                 1L
         );
+        activeSession.send(lastSubscriptionRequest);
         log.info(
                 "Starting Binance market data connector. symbols={}, streams={}",
                 symbols,
@@ -49,6 +55,10 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
 
     @Override
     public void stop() {
+        if (activeSession != null) {
+            activeSession.close();
+            activeSession = null;
+        }
         log.info("Stopping Binance market data connector.");
     }
 
