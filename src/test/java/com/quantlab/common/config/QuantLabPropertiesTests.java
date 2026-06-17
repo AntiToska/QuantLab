@@ -24,7 +24,16 @@ class QuantLabPropertiesTests {
                     "quantlab.research.backtest-run.strategy=close-price-momentum",
                     "quantlab.research.backtest-run.output-directory=./output/research",
                     "quantlab.research.backtest-run.initial-cash=10000",
-                    "quantlab.research.backtest-run.trade-quantity=1"
+                    "quantlab.research.backtest-run.trade-quantity=1",
+                    "quantlab.research.seed-data.enabled=true",
+                    "quantlab.research.seed-data.exchange=BINANCE",
+                    "quantlab.research.seed-data.symbol=BTCUSDT",
+                    "quantlab.research.seed-data.interval=ONE_MINUTE",
+                    "quantlab.research.seed-data.from-inclusive=2026-06-17T00:00:00Z",
+                    "quantlab.research.seed-data.bars=120",
+                    "quantlab.research.seed-data.start-price=100",
+                    "quantlab.research.seed-data.price-step=1",
+                    "quantlab.research.seed-data.volume=10"
             );
 
     @Test
@@ -37,6 +46,9 @@ class QuantLabPropertiesTests {
             assertThat(properties.research().backtestRun().enabled()).isTrue();
             assertThat(properties.research().backtestRun().strategy()).isEqualTo("close-price-momentum");
             assertThat(properties.research().backtestRun().outputDirectory()).isEqualTo("./output/research");
+            assertThat(properties.research().seedData().enabled()).isTrue();
+            assertThat(properties.research().seedData().bars()).isEqualTo(120);
+            assertThat(properties.research().seedData().startPrice()).isEqualTo("100");
         });
     }
 

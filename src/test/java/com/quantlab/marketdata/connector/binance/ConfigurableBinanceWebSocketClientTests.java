@@ -219,6 +219,17 @@ class ConfigurableBinanceWebSocketClientTests {
                         "./output/research",
                         "10000",
                         "1"
+                ),
+                new QuantLabProperties.SeedDataProperties(
+                        false,
+                        "BINANCE",
+                        "BTCUSDT",
+                        "ONE_MINUTE",
+                        "2026-06-17T00:00:00Z",
+                        120,
+                        "100",
+                        "1",
+                        "10"
                 )
         );
     }

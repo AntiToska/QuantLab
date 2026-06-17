@@ -57,7 +57,8 @@ public record QuantLabProperties(
      * Research 模块配置。
      */
     public record ResearchProperties(
-            @Valid BacktestRunProperties backtestRun
+            @Valid BacktestRunProperties backtestRun,
+            @Valid SeedDataProperties seedData
     ) {
     }
 
@@ -77,6 +78,22 @@ public record QuantLabProperties(
             String outputDirectory,
             String initialCash,
             String tradeQuantity
+    ) {
+    }
+
+    /**
+     * 本地样例历史数据灌库配置。
+     */
+    public record SeedDataProperties(
+            boolean enabled,
+            String exchange,
+            String symbol,
+            String interval,
+            String fromInclusive,
+            int bars,
+            String startPrice,
+            String priceStep,
+            String volume
     ) {
     }
 }

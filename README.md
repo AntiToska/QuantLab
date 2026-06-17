@@ -287,6 +287,17 @@ BacktestResult
 
 ```yaml
 quantlab:
+  research:
+    seed-data:
+      enabled: true
+      exchange: BINANCE
+      symbol: BTCUSDT
+      interval: ONE_MINUTE
+      from-inclusive: 2026-06-17T00:00:00Z
+      bars: 120
+      start-price: "100"
+      price-step: "1"
+      volume: "10"
   market-data:
     persistence:
       enabled: true
@@ -304,7 +315,13 @@ quantlab:
       trade-quantity: "1"
 ```
 
-启动后会自动执行一次研究流水线，并将结果写到 `output-directory`。
+如果本地库里还没有可回测的历史 K 线，可以先开启 `seed-data.enabled=true` 灌入一小段样例数据。
+
+启动后会按顺序：
+
+1. 灌入样例 K 线数据（如果开启）
+2. 执行一次研究流水线
+3. 将结果写到 `output-directory`
 
 ---
 

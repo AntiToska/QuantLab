@@ -50,3 +50,13 @@ quantlab:
       output-directory: ./output/research
       initial-cash: "10000"
       trade-quantity: "1"
+    seed-data:
+      enabled: false
+      exchange: BINANCE
+      symbol: BTCUSDT
+      interval: ONE_MINUTE
+      from-inclusive: 2026-06-17T00:00:00Z
+      bars: 120
+      start-price: "100"
+      price-step: "1"
+      volume: "10"

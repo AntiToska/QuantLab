@@ -300,6 +300,14 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
   * 将研究产物写到指定目录
 * 默认仍保持关闭，避免影响无数据库依赖的本地启动和测试
 
+#### 15. 样例历史数据灌库器
+
+* 在 `QuantLabProperties` 中新增 `quantlab.research.seed-data.*` 配置
+* 新增 `ResearchSeedDataRunner`
+* 只有显式开启 `quantlab.research.seed-data.enabled=true` 时才会执行
+* 当前先只生成一段连续 `KlineEvent` 样例数据并写入 PostgreSQL
+* 目的不是模拟真实市场，而是保证本地 runner 能用真实数据库路径跑通研究产物输出
+
 ### 今日问题
 
 * 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现
