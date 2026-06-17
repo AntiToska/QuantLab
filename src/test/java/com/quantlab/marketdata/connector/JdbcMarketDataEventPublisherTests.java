@@ -65,6 +65,50 @@ class JdbcMarketDataEventPublisherTests {
     }
 
     @Test
+    void shouldUpsertKlineEventByBusinessKey() throws Exception {
+        String jdbcUrl = jdbcUrl("kline_upsert");
+        JdbcMarketDataEventPublisher publisher = new JdbcMarketDataEventPublisher(jdbcUrl, "sa", "");
+
+        publisher.publish(new KlineEvent(
+                new Instrument(Exchange.BINANCE, "BTCUSDT"),
+                Instant.parse("2026-06-17T00:01:00Z"),
+                Instant.parse("2026-06-17T00:01:01Z"),
+                KlineInterval.ONE_MINUTE,
+                Instant.parse("2026-06-17T00:00:00Z"),
+                Instant.parse("2026-06-17T00:00:59Z"),
+                new BigDecimal("100.00"),
+                new BigDecimal("101.00"),
+                new BigDecimal("99.50"),
+                new BigDecimal("100.50"),
+                new BigDecimal("10.000"),
+                false
+        ));
+        publisher.publish(new KlineEvent(
+                new Instrument(Exchange.BINANCE, "BTCUSDT"),
+                Instant.parse("2026-06-17T00:01:10Z"),
+                Instant.parse("2026-06-17T00:01:11Z"),
+                KlineInterval.ONE_MINUTE,
+                Instant.parse("2026-06-17T00:00:00Z"),
+                Instant.parse("2026-06-17T00:00:59Z"),
+                new BigDecimal("100.00"),
+                new BigDecimal("102.00"),
+                new BigDecimal("99.00"),
+                new BigDecimal("101.50"),
+                new BigDecimal("12.000"),
+                true
+        ));
+
+        assertThat(queryCount(
+                jdbcUrl,
+                "select count(*) from market_data_klines where symbol = 'BTCUSDT' and interval_name = 'ONE_MINUTE'"
+        )).isEqualTo(1);
+        assertThat(queryDecimal(
+                jdbcUrl,
+                "select close_price from market_data_klines where symbol = 'BTCUSDT' and interval_name = 'ONE_MINUTE'"
+        )).isEqualByComparingTo("101.500000000000000000");
+    }
+
+    @Test
     void shouldIgnoreOrderBookSnapshotForNow() throws Exception {
         String jdbcUrl = jdbcUrl("orderbook");
         JdbcMarketDataEventPublisher publisher = new JdbcMarketDataEventPublisher(jdbcUrl, "sa", "");
@@ -92,6 +136,15 @@ class JdbcMarketDataEventPublisherTests {
              ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
             return resultSet.getInt(1);
+        }
+    }
+
+    private BigDecimal queryDecimal(String jdbcUrl, String sql) throws Exception {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, "sa", "");
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            resultSet.next();
+            return resultSet.getBigDecimal(1);
         }
     }
 }

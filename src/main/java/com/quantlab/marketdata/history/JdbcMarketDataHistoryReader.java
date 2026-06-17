@@ -13,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,8 +62,8 @@ public class JdbcMarketDataHistoryReader implements MarketDataHistoryReader {
              )) {
             statement.setString(1, instrument.exchange().name());
             statement.setString(2, instrument.symbol());
-            statement.setObject(3, fromInclusive);
-            statement.setObject(4, toExclusive);
+            statement.setObject(3, timestamp(fromInclusive));
+            statement.setObject(4, timestamp(toExclusive));
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<TradeEvent> events = new ArrayList<>();
                 while (resultSet.next()) {
@@ -110,8 +112,8 @@ public class JdbcMarketDataHistoryReader implements MarketDataHistoryReader {
             statement.setString(1, instrument.exchange().name());
             statement.setString(2, instrument.symbol());
             statement.setString(3, interval.name());
-            statement.setObject(4, fromInclusive);
-            statement.setObject(5, toExclusive);
+            statement.setObject(4, timestamp(fromInclusive));
+            statement.setObject(5, timestamp(toExclusive));
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<KlineEvent> events = new ArrayList<>();
                 while (resultSet.next()) {
@@ -174,6 +176,11 @@ public class JdbcMarketDataHistoryReader implements MarketDataHistoryReader {
     }
 
     private Instant instant(ResultSet resultSet, String columnName) throws SQLException {
-        return resultSet.getObject(columnName, Instant.class);
+        OffsetDateTime value = resultSet.getObject(columnName, OffsetDateTime.class);
+        return value.toInstant();
+    }
+
+    private OffsetDateTime timestamp(Instant instant) {
+        return instant.atOffset(ZoneOffset.UTC);
     }
 }

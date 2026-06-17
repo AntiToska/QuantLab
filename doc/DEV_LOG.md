@@ -308,16 +308,41 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 当前先只生成一段连续 `KlineEvent` 样例数据并写入 PostgreSQL
 * 目的不是模拟真实市场，而是保证本地 runner 能用真实数据库路径跑通研究产物输出
 
+#### 16. 本地研究闭环真实验证
+
+* 修正 `ResearchSeedDataRunner` 与 `BacktestResearchRunner` 的执行顺序
+* 通过 `@Order` 保证本地联调时先灌库、再回测、最后输出研究产物
+* 为 `JdbcMarketDataEventPublisher` 增加按业务键幂等写入能力：
+  * 业务键：`exchange + symbol + interval + open_time`
+  * PostgreSQL 使用 `on conflict do update`
+  * H2 测试库使用 `merge into`
+* 为 `market_data_klines` 增加唯一索引，避免重复 seed 造成样本膨胀
+* 修正 PostgreSQL JDBC 对 `timestamptz` 的读取兼容：
+  * 查询参数统一使用 `OffsetDateTime`
+  * 结果读取改为 `OffsetDateTime -> Instant`
+* 新增 K 线 upsert 测试，保证重复写入同一根 K 线时只保留一条记录
+* 完成真实 PostgreSQL + Spring Boot 本地闭环验证：
+
+```bash
+mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-boot:run -Dspring-boot.run.arguments="--quantlab.market-data.persistence.enabled=true --quantlab.market-data.binance.enabled=false --quantlab.market-data.okx.enabled=false --quantlab.research.seed-data.enabled=true --quantlab.research.backtest-run.enabled=true --quantlab.research.backtest-run.output-directory=./output/research/20260617-172002 --quantlab.research.backtest-run.from-inclusive=2026-06-17T00:00:00Z --quantlab.research.backtest-run.to-exclusive=2026-06-17T02:00:00Z --quantlab.research.seed-data.from-inclusive=2026-06-17T00:00:00Z --quantlab.research.seed-data.bars=120"
+```
+
+* 本次真实运行验证结果：
+  * 数据库 `market_data_klines` 行数保持为 `120`
+  * 回测结果 `processedBars=120`
+  * 输出产物已生成：
+    * `output/research/20260617-172002/backtest-result.json`
+    * `output/research/20260617-172002/research-report.md`
+* 当前测试结果已更新为：`40 tests, 0 failures`
+
 ### 今日问题
 
-* 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现
-* 早期路线过度强调 ClickHouse 等基础设施，偏离了当前最重要的学习与闭环目标
-* 本地 Docker 初次联调时需要确认 WSL 当前用户是否有 Docker API 权限；必要时通过提权命令访问 Docker socket
-* Sharpe Ratio 暂未实现，因为需要明确收益序列周期和年化口径，不能随便硬编码一个误导性指标
-* AI Research 目前仍缺“如何消费 JSON 结果并生成中文研究报告”的最小输入输出协议
+* 真实 PostgreSQL JDBC 与 H2 测试库在时间类型和 upsert 语法上存在方言差异，联调时需要分别兼容
+* 当前样例数据是单边上涨序列，适合验证闭环，但不适合直接代表真实策略能力
+* 回测指标已可用，但胜率与 Sharpe 在样例行情下参考意义有限，后续要尽快接入更真实的历史数据样本
 
 ### 下一步
 
-* 明确 Sharpe Ratio 的计算口径并补齐指标
-* 评估 AI Research 最小输入输出协议
-* 开启真实 Binance WebSocket 后，验证 `Trade / Kline` 能持续写入本地 PostgreSQL
+* 开启真实 Binance WebSocket，验证实时 `Trade / Kline` 持续入库
+* 在真实或归档历史样本上验证策略、指标和研究报告输出是否稳定
+* 继续收敛研究闭环，避免过早扩展更多交易所或更重基础设施

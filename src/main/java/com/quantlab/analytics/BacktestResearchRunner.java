@@ -16,6 +16,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
  * 只有显式开启时才会运行，用于把 PostgreSQL 历史数据直接转成研究产物文件。
  */
 @Component
+@Order(Ordered.HIGHEST_PRECEDENCE + 100)
 @ConditionalOnBean(BacktestResearchPipeline.class)
 @ConditionalOnProperty(prefix = "quantlab.research.backtest-run", name = "enabled", havingValue = "true")
 public class BacktestResearchRunner implements ApplicationRunner {

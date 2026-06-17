@@ -9,6 +9,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,6 +34,7 @@ public class JdbcMarketDataEventPublisher implements MarketDataEventPublisher {
     private final String jdbcUrl;
     private final String username;
     private final String password;
+    private final boolean postgresDialect;
 
     public JdbcMarketDataEventPublisher(
             @org.springframework.beans.factory.annotation.Value("${quantlab.market-data.persistence.jdbc-url}") String jdbcUrl,
@@ -40,6 +44,7 @@ public class JdbcMarketDataEventPublisher implements MarketDataEventPublisher {
         this.jdbcUrl = jdbcUrl;
         this.username = username;
         this.password = password;
+        this.postgresDialect = jdbcUrl.startsWith("jdbc:postgresql:");
         initializeSchema();
     }
 
@@ -98,6 +103,12 @@ public class JdbcMarketDataEventPublisher implements MarketDataEventPublisher {
                     )
                     """
             );
+            statement.executeUpdate(
+                    """
+                    create unique index if not exists uq_market_data_klines_business_key
+                    on market_data_klines (exchange_name, symbol, interval_name, open_time)
+                    """
+            );
         } catch (SQLException exception) {
             throw new IllegalStateException("failed to initialize market data schema", exception);
         }
@@ -124,8 +135,8 @@ public class JdbcMarketDataEventPublisher implements MarketDataEventPublisher {
         )) {
             statement.setString(1, event.instrument().exchange().name());
             statement.setString(2, event.instrument().symbol());
-            statement.setObject(3, event.eventTime());
-            statement.setObject(4, event.receivedAt());
+            statement.setObject(3, timestamp(event.eventTime()));
+            statement.setObject(4, timestamp(event.receivedAt()));
             statement.setString(5, event.tradeId());
             statement.setBigDecimal(6, event.price());
             statement.setBigDecimal(7, event.quantity());
@@ -135,9 +146,57 @@ public class JdbcMarketDataEventPublisher implements MarketDataEventPublisher {
     }
 
     private void persistKline(Connection connection, KlineEvent event) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(
-                """
-                insert into market_data_klines (
+        try (PreparedStatement statement = connection.prepareStatement(klineUpsertSql())) {
+            statement.setString(1, event.instrument().exchange().name());
+            statement.setString(2, event.instrument().symbol());
+            statement.setString(3, event.interval().name());
+            statement.setObject(4, timestamp(event.eventTime()));
+            statement.setObject(5, timestamp(event.receivedAt()));
+            statement.setObject(6, timestamp(event.openTime()));
+            statement.setObject(7, timestamp(event.closeTime()));
+            statement.setBigDecimal(8, event.openPrice());
+            statement.setBigDecimal(9, event.highPrice());
+            statement.setBigDecimal(10, event.lowPrice());
+            statement.setBigDecimal(11, event.closePrice());
+            statement.setBigDecimal(12, event.volume());
+            statement.setBoolean(13, event.closed());
+            statement.executeUpdate();
+        }
+    }
+
+    private String klineUpsertSql() {
+        if (postgresDialect) {
+            return """
+                    insert into market_data_klines (
+                        exchange_name,
+                        symbol,
+                        interval_name,
+                        event_time,
+                        received_at,
+                        open_time,
+                        close_time,
+                        open_price,
+                        high_price,
+                        low_price,
+                        close_price,
+                        volume,
+                        closed
+                    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    on conflict (exchange_name, symbol, interval_name, open_time)
+                    do update set
+                        event_time = excluded.event_time,
+                        received_at = excluded.received_at,
+                        close_time = excluded.close_time,
+                        open_price = excluded.open_price,
+                        high_price = excluded.high_price,
+                        low_price = excluded.low_price,
+                        close_price = excluded.close_price,
+                        volume = excluded.volume,
+                        closed = excluded.closed
+                    """;
+        }
+        return """
+                merge into market_data_klines (
                     exchange_name,
                     symbol,
                     interval_name,
@@ -151,23 +210,12 @@ public class JdbcMarketDataEventPublisher implements MarketDataEventPublisher {
                     close_price,
                     volume,
                     closed
-                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """
-        )) {
-            statement.setString(1, event.instrument().exchange().name());
-            statement.setString(2, event.instrument().symbol());
-            statement.setString(3, event.interval().name());
-            statement.setObject(4, event.eventTime());
-            statement.setObject(5, event.receivedAt());
-            statement.setObject(6, event.openTime());
-            statement.setObject(7, event.closeTime());
-            statement.setBigDecimal(8, event.openPrice());
-            statement.setBigDecimal(9, event.highPrice());
-            statement.setBigDecimal(10, event.lowPrice());
-            statement.setBigDecimal(11, event.closePrice());
-            statement.setBigDecimal(12, event.volume());
-            statement.setBoolean(13, event.closed());
-            statement.executeUpdate();
-        }
+                ) key (exchange_name, symbol, interval_name, open_time)
+                values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+    }
+
+    private OffsetDateTime timestamp(Instant instant) {
+        return instant.atOffset(ZoneOffset.UTC);
     }
 }

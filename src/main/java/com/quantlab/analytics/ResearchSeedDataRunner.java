@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Component;
  * 让回测和研究 runner 有可消费的数据。
  */
 @Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnProperty(prefix = "quantlab.research.seed-data", name = "enabled", havingValue = "true")
 public class ResearchSeedDataRunner implements ApplicationRunner {
 

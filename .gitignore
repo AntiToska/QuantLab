@@ -5,6 +5,7 @@
 # Maven / Java build outputs
 target/
 *.class
+output/
 
 # Local Maven repository used in workspace
 .m2/
