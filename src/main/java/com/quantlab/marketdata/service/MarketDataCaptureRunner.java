@@ -2,12 +2,18 @@ package com.quantlab.marketdata.service;
 
 import com.quantlab.common.config.QuantLabProperties;
 import jakarta.annotation.PreDestroy;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.slf4j.Logger;
@@ -66,15 +72,28 @@ public class MarketDataCaptureRunner {
         String symbol = required(config.symbol(), "symbol");
         String interval = required(config.interval(), "interval").trim().toUpperCase();
         long durationSeconds = requirePositive(config.durationSeconds(), "durationSeconds");
+        WsEndpointProbe endpointProbe = probeEndpoint(exchange);
         CaptureSnapshot before = snapshot(exchange, symbol, interval);
         Instant startedAt = Instant.now();
 
         log.info(
-                "Starting local market data capture run. exchange={}, symbol={}, interval={}, durationSeconds={}, baselineTrades={}, baselineKlines={}",
+                """
+                Starting local market data capture run.
+                exchange={}, symbol={}, interval={}, durationSeconds={}
+                wsUrl={}, wsHost={}, wsPort={}
+                dnsResolvedAddresses={}
+                tcpReachable={}
+                baselineTrades={}, baselineKlines={}
+                """,
                 exchange,
                 symbol,
                 interval,
                 durationSeconds,
+                endpointProbe.wsUrl(),
+                endpointProbe.host(),
+                endpointProbe.port(),
+                endpointProbe.resolvedAddresses(),
+                endpointProbe.tcpReachable(),
                 before.tradeCount(),
                 before.klineCount()
         );
@@ -153,6 +172,51 @@ public class MarketDataCaptureRunner {
         }
     }
 
+    private WsEndpointProbe probeEndpoint(String exchange) {
+        String wsUrl = properties.marketData()
+                .connector(exchange)
+                .map(QuantLabProperties.ExchangeConnectorProperties::wsUrl)
+                .orElseThrow(() -> new IllegalArgumentException("unsupported capture exchange: " + exchange));
+        URI uri = URI.create(required(wsUrl, "wsUrl"));
+        String host = required(uri.getHost(), "wsHost");
+        int port = uri.getPort() > 0 ? uri.getPort() : defaultPort(uri);
+        String resolvedAddresses = resolveAddresses(host);
+        boolean tcpReachable = tcpReachable(host, port);
+        return new WsEndpointProbe(wsUrl, host, port, resolvedAddresses, tcpReachable);
+    }
+
+    private int defaultPort(URI uri) {
+        return switch (uri.getScheme()) {
+            case "wss" -> 443;
+            case "ws" -> 80;
+            default -> throw new IllegalArgumentException("unsupported ws scheme: " + uri.getScheme());
+        };
+    }
+
+    private String resolveAddresses(String host) {
+        try {
+            InetAddress[] addresses = InetAddress.getAllByName(host);
+            return Arrays.stream(addresses)
+                    .map(InetAddress::getHostAddress)
+                    .distinct()
+                    .reduce((left, right) -> left + ", " + right)
+                    .orElse("unresolved");
+        } catch (IOException exception) {
+            log.warn("Failed to resolve WebSocket host. host={}", host, exception);
+            return "unresolved";
+        }
+    }
+
+    private boolean tcpReachable(String host, int port) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(host, port), 3000);
+            return true;
+        } catch (IOException exception) {
+            log.warn("WebSocket TCP preflight failed. host={}, port={}", host, port, exception);
+            return false;
+        }
+    }
+
     private long countTrades(Connection connection, String exchange, String symbol) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
                 """
@@ -206,5 +270,14 @@ public class MarketDataCaptureRunner {
     }
 
     private record CaptureSnapshot(long tradeCount, long klineCount) {
+    }
+
+    private record WsEndpointProbe(
+            String wsUrl,
+            String host,
+            int port,
+            String resolvedAddresses,
+            boolean tcpReachable
+    ) {
     }
 }

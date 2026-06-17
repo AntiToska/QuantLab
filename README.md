@@ -288,12 +288,21 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-
 * baseline trades / klines
 * final trades / klines
 * captured trades / klines
+* `dnsResolvedAddresses`
+* `tcpReachable`
 
 如果增量为 `0`，通常意味着：
 
 * 当前环境无法连通 Binance WebSocket
 * 代理或防火墙拦截了 `wss://stream.binance.com:9443/ws`
 * 采集窗口过短，尚未等到新 K 线闭合
+
+排查时可以先看：
+
+* `dnsResolvedAddresses`
+  如果这里是 `unresolved`，优先检查 DNS
+* `tcpReachable=false`
+  说明在 WebSocket 握手前，TCP 连接就已经失败
 
 ---
 
