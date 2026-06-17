@@ -205,6 +205,7 @@ com.quantlab
 * Binance 消息解析与订阅建模
 * WebSocket transport 抽象
 * 真实 WebSocket 的重连、订阅重放与心跳基础能力
+* 可选的 PostgreSQL JDBC 落库发布器
 * 基础测试体系
 
 项目开发记录见：
@@ -213,6 +214,135 @@ com.quantlab
 * [周报](doc/WEEKLY_REVIEW.md)
 * [项目看板](doc/PROJECT_BOARD.md)
 * [Agent 开发约束](doc/AGENT_GUIDE.md)
+
+---
+
+## Market Data 持久化配置
+
+当前 `market-data` 模块支持两种事件发布模式：
+
+* 默认模式：仅打印日志，不连接数据库
+* 持久化模式：将统一行情事件写入 PostgreSQL
+
+对应配置项如下：
+
+```yaml
+quantlab:
+  market-data:
+    persistence:
+      enabled: false
+      jdbc-url: jdbc:postgresql://localhost:5432/quantlab
+      username: quantlab
+      password: quantlab
+```
+
+配置说明：
+
+* `enabled`
+  控制是否启用 PostgreSQL 持久化；默认 `false`
+* `jdbc-url`
+  PostgreSQL JDBC 连接串
+* `username`
+  数据库用户名
+* `password`
+  数据库密码
+
+当前已支持落库的事件类型：
+
+* `TradeEvent`
+* `KlineEvent`
+
+当前暂未落库：
+
+* `OrderBookSnapshotEvent`
+
+---
+
+## 本地 PostgreSQL 联调
+
+如果你想在本机联调 `Binance -> PostgreSQL` 这条链路，可以按下面做。
+
+### 1. 准备数据库
+
+先创建数据库和用户，示例：
+
+```sql
+create database quantlab;
+create user quantlab with password 'quantlab';
+grant all privileges on database quantlab to quantlab;
+```
+
+如果你已经有本地 PostgreSQL，也可以直接复用已有用户和库。
+
+### 2. 打开持久化配置
+
+把 `src/main/resources/application.yml` 或你自己的本地覆盖配置改成：
+
+```yaml
+quantlab:
+  market-data:
+    persistence:
+      enabled: true
+      jdbc-url: jdbc:postgresql://localhost:5432/quantlab
+      username: quantlab
+      password: quantlab
+```
+
+### 3. 选择 WebSocket 模式
+
+如果你只想验证数据库写入链路，可以继续保持 stub 模式：
+
+```yaml
+quantlab:
+  market-data:
+    binance:
+      real-client-enabled: false
+```
+
+如果你要联调真实 Binance WebSocket，则改成：
+
+```yaml
+quantlab:
+  market-data:
+    binance:
+      real-client-enabled: true
+```
+
+### 4. 启动应用
+
+```bash
+mvn spring-boot:run
+```
+
+默认情况下，持久化发布器会在启动时自动建表。
+
+当前会自动创建：
+
+* `market_data_trades`
+* `market_data_klines`
+
+### 5. 验证数据
+
+启动后可以在 PostgreSQL 中查询：
+
+```sql
+select * from market_data_trades order by id desc limit 20;
+select * from market_data_klines order by id desc limit 20;
+```
+
+如果你开启的仍是 stub 模式，那么只会验证应用装配和数据库连通性，不会自动产生真实行情写入。  
+要看到真实数据，需要同时开启真实 Binance WebSocket。
+
+### 6. 当前限制
+
+这套持久化实现目前是“先跑通闭环”的最小版本：
+
+* 使用原生 JDBC，而不是 ORM
+* 每次发布事件单独建连写入，优先保证简单可控
+* 暂未做批量写入、连接池、重试和分区策略
+* 暂未持久化 OrderBookSnapshot
+
+这些能力会放到后续性能优化阶段再做。
 
 ---
 

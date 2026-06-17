@@ -153,6 +153,7 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * `OrderBookSnapshotEvent` 暂不落库，先保持跳过策略
 * 新增 H2 测试覆盖，验证 `Trade / Kline` 的基础落库路径
 * 当前测试结果已更新为：`24 tests, 0 failures`
+* 补充 `quantlab.market-data.persistence.*` 配置说明和本地 PostgreSQL 联调文档
 
 ### 今日问题
 
