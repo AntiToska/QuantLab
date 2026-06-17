@@ -38,6 +38,7 @@ class BacktestResultJsonExporterTests {
                         new BigDecimal("10000"),
                         new BigDecimal("10020"),
                         new BigDecimal("0.002"),
+                        new BigDecimal("1.23"),
                         new BigDecimal("0.01"),
                         40,
                         new BigDecimal("0.55")
@@ -54,6 +55,7 @@ class BacktestResultJsonExporterTests {
         assertThat(json).contains("\"initialCash\" : 10000");
         assertThat(json).contains("\"tradeQuantity\" : 1");
         assertThat(json).contains("\"totalReturn\" : 0.002");
+        assertThat(json).contains("\"sharpeRatio\" : 1.23");
         assertThat(json).contains("\"maxDrawdown\" : 0.01");
         assertThat(json).contains("\"winRate\" : 0.55");
     }

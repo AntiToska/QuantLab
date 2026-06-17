@@ -14,6 +14,7 @@ public record BacktestMetrics(
         BigDecimal initialEquity,
         BigDecimal finalEquity,
         BigDecimal totalReturn,
+        BigDecimal sharpeRatio,
         BigDecimal maxDrawdown,
         int executedTrades,
         BigDecimal winRate
@@ -25,6 +26,7 @@ public record BacktestMetrics(
         Objects.requireNonNull(initialEquity, "initialEquity must not be null");
         Objects.requireNonNull(finalEquity, "finalEquity must not be null");
         Objects.requireNonNull(totalReturn, "totalReturn must not be null");
+        Objects.requireNonNull(sharpeRatio, "sharpeRatio must not be null");
         Objects.requireNonNull(maxDrawdown, "maxDrawdown must not be null");
         Objects.requireNonNull(winRate, "winRate must not be null");
         if (initialEquity.signum() < 0 || finalEquity.signum() < 0) {
@@ -45,6 +47,7 @@ public record BacktestMetrics(
         return new BacktestMetrics(
                 initialEquity,
                 initialEquity,
+                BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 BigDecimal.ZERO,
                 0,

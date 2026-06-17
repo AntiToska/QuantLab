@@ -173,7 +173,7 @@
 
 * [x] 统一策略接口
 * [x] 示例策略
-* [ ] Sharpe
+* [x] Sharpe
 * [x] Drawdown / WinRate
 * [x] 结构化回测结果输出
 

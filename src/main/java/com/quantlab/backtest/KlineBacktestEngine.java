@@ -2,6 +2,7 @@ package com.quantlab.backtest;
 
 import com.quantlab.marketdata.history.MarketDataHistoryReader;
 import com.quantlab.marketdata.model.KlineEvent;
+import com.quantlab.marketdata.model.KlineInterval;
 import com.quantlab.strategy.KlineStrategy;
 import com.quantlab.strategy.StrategySignal;
 import java.util.List;
@@ -41,7 +42,10 @@ public class KlineBacktestEngine {
         int holdSignals = 0;
         SimulatedBroker broker = new SimulatedBroker();
         Portfolio portfolio = new Portfolio(request.initialCash());
-        BacktestMetricsCollector metricsCollector = new BacktestMetricsCollector(request.initialCash());
+        BacktestMetricsCollector metricsCollector = new BacktestMetricsCollector(
+                request.initialCash(),
+                annualizationPeriods(request.interval())
+        );
         for (KlineEvent event : events) {
             portfolio.mark(event);
             StrategySignal signal = strategy.onKline(event);
@@ -83,5 +87,16 @@ public class KlineBacktestEngine {
                 portfolio.equity(),
                 metrics
         );
+    }
+
+    private int annualizationPeriods(KlineInterval interval) {
+        return switch (interval) {
+            case ONE_MINUTE -> 365 * 24 * 60;
+            case FIVE_MINUTES -> 365 * 24 * 12;
+            case FIFTEEN_MINUTES -> 365 * 24 * 4;
+            case ONE_HOUR -> 365 * 24;
+            case FOUR_HOURS -> 365 * 6;
+            case ONE_DAY -> 365;
+        };
     }
 }

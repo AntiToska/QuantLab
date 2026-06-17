@@ -249,6 +249,16 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 补充 JSON 导出测试，覆盖关键字段和时间格式
 * 当前测试结果已更新为：`35 tests, 0 failures`
 
+#### 11. Sharpe 指标补齐
+
+* 在 `BacktestMetrics` 中增加 `sharpeRatio`
+* 当前 Sharpe 定义为：
+  * 基于相邻权益点收益率
+  * 不扣无风险利率
+  * 按 K 线周期做年化
+* `KlineBacktestEngine` 根据 `KlineInterval` 映射年化周期
+* 补充 Sharpe 的回测测试和 JSON 导出测试
+
 ### 今日问题
 
 * 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现

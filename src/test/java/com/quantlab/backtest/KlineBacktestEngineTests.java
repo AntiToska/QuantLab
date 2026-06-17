@@ -46,6 +46,7 @@ class KlineBacktestEngineTests {
         assertThat(result.metrics().initialEquity()).isEqualByComparingTo(new BigDecimal("10000"));
         assertThat(result.metrics().finalEquity()).isEqualByComparingTo(new BigDecimal("9998.00"));
         assertThat(result.metrics().totalReturn()).isEqualByComparingTo(new BigDecimal("-0.0002"));
+        assertThat(result.metrics().sharpeRatio()).isNegative();
         assertThat(result.metrics().maxDrawdown()).isEqualByComparingTo(new BigDecimal("0.0002"));
         assertThat(result.metrics().executedTrades()).isEqualTo(2);
         assertThat(result.metrics().winRate()).isEqualByComparingTo(BigDecimal.ZERO);
@@ -97,6 +98,7 @@ class KlineBacktestEngineTests {
         assertThat(result.finalPosition()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(result.finalEquity()).isEqualByComparingTo(new BigDecimal("50"));
         assertThat(result.metrics().executedTrades()).isZero();
+        assertThat(result.metrics().sharpeRatio()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(result.metrics().totalReturn()).isEqualByComparingTo(BigDecimal.ZERO);
     }
 
@@ -111,6 +113,7 @@ class KlineBacktestEngineTests {
         assertThat(result.metrics().initialEquity()).isEqualByComparingTo(new BigDecimal("10000"));
         assertThat(result.metrics().finalEquity()).isEqualByComparingTo(new BigDecimal("10000"));
         assertThat(result.metrics().totalReturn()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(result.metrics().sharpeRatio()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(result.metrics().maxDrawdown()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(result.metrics().executedTrades()).isZero();
         assertThat(result.metrics().winRate()).isEqualByComparingTo(BigDecimal.ZERO);
