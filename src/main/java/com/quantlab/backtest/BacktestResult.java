@@ -1,5 +1,6 @@
 package com.quantlab.backtest;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -15,7 +16,10 @@ public record BacktestResult(
         int processedBars,
         int buySignals,
         int sellSignals,
-        int holdSignals
+        int holdSignals,
+        BigDecimal finalCash,
+        BigDecimal finalPosition,
+        BigDecimal finalEquity
 ) {
 
     public BacktestResult {
@@ -24,6 +28,9 @@ public record BacktestResult(
         }
         Objects.requireNonNull(fromInclusive, "fromInclusive must not be null");
         Objects.requireNonNull(toExclusive, "toExclusive must not be null");
+        Objects.requireNonNull(finalCash, "finalCash must not be null");
+        Objects.requireNonNull(finalPosition, "finalPosition must not be null");
+        Objects.requireNonNull(finalEquity, "finalEquity must not be null");
         if (!fromInclusive.isBefore(toExclusive)) {
             throw new IllegalArgumentException("fromInclusive must be before toExclusive");
         }
@@ -32,6 +39,9 @@ public record BacktestResult(
         }
         if (processedBars != buySignals + sellSignals + holdSignals) {
             throw new IllegalArgumentException("processedBars must equal signal counts");
+        }
+        if (finalPosition.signum() < 0) {
+            throw new IllegalArgumentException("finalPosition must not be negative");
         }
 
         strategyName = strategyName.trim();

@@ -162,6 +162,10 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 新增 `BacktestRequest`、`BacktestResult` 和 `KlineBacktestEngine`
 * 打通从历史 K 线读取到策略逐根执行的最小回测事件循环
 * 当前测试结果已更新为：`30 tests, 0 failures`
+* 新增 `SimulatedBroker`、`SimulatedOrder`、`SimulatedTrade`
+* 新增 `Portfolio`，支持最小现金、持仓和权益演算
+* 回测结果增加 `finalCash / finalPosition / finalEquity`
+* 当前测试结果已更新为：`31 tests, 0 failures`
 
 ### 今日问题
 
@@ -170,5 +174,5 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 
 ### 下一步
 
-* 补齐 Broker Simulator 和 Portfolio Engine 的最小模型
+* 补齐回测结果结构化输出和基础 Metrics
 * 评估 AI Research 最小输入输出协议

@@ -2,6 +2,7 @@ package com.quantlab.backtest;
 
 import com.quantlab.marketdata.model.Instrument;
 import com.quantlab.marketdata.model.KlineInterval;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -15,7 +16,9 @@ public record BacktestRequest(
         Instrument instrument,
         KlineInterval interval,
         Instant fromInclusive,
-        Instant toExclusive
+        Instant toExclusive,
+        BigDecimal initialCash,
+        BigDecimal tradeQuantity
 ) {
 
     public BacktestRequest {
@@ -23,8 +26,16 @@ public record BacktestRequest(
         Objects.requireNonNull(interval, "interval must not be null");
         Objects.requireNonNull(fromInclusive, "fromInclusive must not be null");
         Objects.requireNonNull(toExclusive, "toExclusive must not be null");
+        Objects.requireNonNull(initialCash, "initialCash must not be null");
+        Objects.requireNonNull(tradeQuantity, "tradeQuantity must not be null");
         if (!fromInclusive.isBefore(toExclusive)) {
             throw new IllegalArgumentException("fromInclusive must be before toExclusive");
+        }
+        if (initialCash.signum() < 0) {
+            throw new IllegalArgumentException("initialCash must not be negative");
+        }
+        if (tradeQuantity.signum() <= 0) {
+            throw new IllegalArgumentException("tradeQuantity must be positive");
         }
     }
 }

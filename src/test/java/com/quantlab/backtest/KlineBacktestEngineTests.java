@@ -35,6 +35,9 @@ class KlineBacktestEngineTests {
         assertThat(result.buySignals()).isEqualTo(1);
         assertThat(result.sellSignals()).isEqualTo(1);
         assertThat(result.holdSignals()).isEqualTo(1);
+        assertThat(result.finalCash()).isEqualByComparingTo(new BigDecimal("9998.00"));
+        assertThat(result.finalPosition()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(result.finalEquity()).isEqualByComparingTo(new BigDecimal("9998.00"));
         assertThat(strategy.events).hasSize(3);
         assertThat(historyReader.requestedInstrument).isEqualTo(new Instrument(Exchange.BINANCE, "BTCUSDT"));
     }
@@ -56,9 +59,32 @@ class KlineBacktestEngineTests {
                 new Instrument(Exchange.BINANCE, "BTCUSDT"),
                 KlineInterval.ONE_MINUTE,
                 Instant.parse("2026-06-17T00:00:00Z"),
-                Instant.parse("2026-06-17T00:00:00Z")
+                Instant.parse("2026-06-17T00:00:00Z"),
+                new BigDecimal("10000"),
+                BigDecimal.ONE
         )).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("fromInclusive");
+    }
+
+    @Test
+    void shouldNotBuyWhenCashIsInsufficient() {
+        KlineBacktestEngine engine = new KlineBacktestEngine(new RecordingHistoryReader(List.of(
+                kline("2026-06-17T00:00:00Z", "100", "101")
+        )));
+
+        BacktestResult result = engine.run(new BacktestRequest(
+                new Instrument(Exchange.BINANCE, "BTCUSDT"),
+                KlineInterval.ONE_MINUTE,
+                Instant.parse("2026-06-17T00:00:00Z"),
+                Instant.parse("2026-06-17T00:01:00Z"),
+                new BigDecimal("50"),
+                BigDecimal.ONE
+        ), new RecordingStrategy());
+
+        assertThat(result.buySignals()).isEqualTo(1);
+        assertThat(result.finalCash()).isEqualByComparingTo(new BigDecimal("50"));
+        assertThat(result.finalPosition()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(result.finalEquity()).isEqualByComparingTo(new BigDecimal("50"));
     }
 
     private BacktestRequest request() {
@@ -66,7 +92,9 @@ class KlineBacktestEngineTests {
                 new Instrument(Exchange.BINANCE, "BTCUSDT"),
                 KlineInterval.ONE_MINUTE,
                 Instant.parse("2026-06-17T00:00:00Z"),
-                Instant.parse("2026-06-17T00:03:00Z")
+                Instant.parse("2026-06-17T00:03:00Z"),
+                new BigDecimal("10000"),
+                BigDecimal.ONE
         );
     }
 

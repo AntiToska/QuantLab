@@ -39,7 +39,10 @@ public class KlineBacktestEngine {
         int buySignals = 0;
         int sellSignals = 0;
         int holdSignals = 0;
+        SimulatedBroker broker = new SimulatedBroker();
+        Portfolio portfolio = new Portfolio(request.initialCash());
         for (KlineEvent event : events) {
+            portfolio.mark(event);
             StrategySignal signal = strategy.onKline(event);
             if (signal == null) {
                 throw new IllegalStateException("strategy signal must not be null");
@@ -49,6 +52,9 @@ public class KlineBacktestEngine {
                 case SELL -> sellSignals++;
                 case HOLD -> holdSignals++;
             }
+            broker.createOrder(event, signal, request.tradeQuantity())
+                    .map(broker::execute)
+                    .ifPresent(portfolio::apply);
         }
 
         return new BacktestResult(
@@ -58,7 +64,10 @@ public class KlineBacktestEngine {
                 events.size(),
                 buySignals,
                 sellSignals,
-                holdSignals
+                holdSignals,
+                portfolio.cash(),
+                portfolio.position(),
+                portfolio.equity()
         );
     }
 }

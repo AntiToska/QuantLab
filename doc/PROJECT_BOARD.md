@@ -148,8 +148,8 @@
 
 * [x] 历史数据加载
 * [x] 回测事件循环
-* [ ] Broker Simulator
-* [ ] Portfolio Engine
+* [x] Broker Simulator
+* [x] Portfolio Engine
 
 完成标准：
 
@@ -263,8 +263,8 @@
 * [x] Market Data 历史读取入口
 * [x] Backtest 历史数据加载器
 * [x] 事件驱动回测循环
-* [ ] Broker Simulator
-* [ ] Position / Portfolio 演算
+* [x] Broker Simulator
+* [x] Position / Portfolio 演算
 * [ ] 回测结果结构化输出
 
 ---
