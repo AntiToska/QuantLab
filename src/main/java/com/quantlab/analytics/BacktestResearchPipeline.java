@@ -6,6 +6,7 @@ import com.quantlab.backtest.BacktestResultJsonExporter;
 import com.quantlab.backtest.KlineBacktestEngine;
 import com.quantlab.marketdata.history.MarketDataHistoryReader;
 import com.quantlab.strategy.KlineStrategy;
+import java.nio.file.Path;
 import java.util.Objects;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
@@ -24,17 +25,20 @@ public class BacktestResearchPipeline {
     private final BacktestResultJsonExporter backtestResultJsonExporter;
     private final BacktestResearchReportGenerator reportGenerator;
     private final BacktestResearchReportMarkdownExporter markdownExporter;
+    private final BacktestResearchArtifactWriter artifactWriter;
 
     public BacktestResearchPipeline(
             KlineBacktestEngine backtestEngine,
             BacktestResultJsonExporter backtestResultJsonExporter,
             BacktestResearchReportGenerator reportGenerator,
-            BacktestResearchReportMarkdownExporter markdownExporter
+            BacktestResearchReportMarkdownExporter markdownExporter,
+            BacktestResearchArtifactWriter artifactWriter
     ) {
         this.backtestEngine = backtestEngine;
         this.backtestResultJsonExporter = backtestResultJsonExporter;
         this.reportGenerator = reportGenerator;
         this.markdownExporter = markdownExporter;
+        this.artifactWriter = artifactWriter;
     }
 
     public BacktestResearchArtifact run(BacktestRequest request, KlineStrategy strategy) {
@@ -51,5 +55,15 @@ public class BacktestResearchPipeline {
                 researchReport,
                 researchReportMarkdown
         );
+    }
+
+    public BacktestResearchOutputPaths runAndWrite(
+            BacktestRequest request,
+            KlineStrategy strategy,
+            Path outputDirectory
+    ) {
+        Objects.requireNonNull(outputDirectory, "outputDirectory must not be null");
+        BacktestResearchArtifact artifact = run(request, strategy);
+        return artifactWriter.write(outputDirectory, artifact);
     }
 }

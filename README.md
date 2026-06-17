@@ -258,6 +258,33 @@ quantlab:
 
 ---
 
+## Research 输出
+
+当前 `analytics` 模块已经具备最小研究输出链路：
+
+```text
+BacktestResult
+  -> backtest-result.json
+  -> BacktestResearchReport
+  -> research-report.md
+```
+
+如果你已经准备好了 `BacktestRequest`、`KlineStrategy` 和历史数据来源，可以直接调用：
+
+* `BacktestResearchPipeline.run(...)`
+  返回内存中的完整研究产物
+* `BacktestResearchPipeline.runAndWrite(...)`
+  将结果写到指定目录
+
+默认会输出两个文件：
+
+* `backtest-result.json`
+* `research-report.md`
+
+这个入口的目标是为后续真实联调提供稳定出口，而不是先引入复杂的 Web、CLI 或任务调度框架。
+
+---
+
 ## 本地 PostgreSQL 联调
 
 如果你想在本机联调 `Binance -> PostgreSQL` 这条链路，可以按下面做。
