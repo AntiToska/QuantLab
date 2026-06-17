@@ -142,6 +142,18 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 完成并推送提交：
   * `b071524 feat(binance): add reconnect and heartbeat to websocket transport`
 
+#### 5. Market Data 持久化闭环
+
+* 新增基于原生 JDBC 的 `JdbcMarketDataEventPublisher`
+* 默认仍保持日志发布模式，避免在未配置数据库时影响本地启动和测试
+* 当显式开启 `quantlab.market-data.persistence.enabled=true` 时，可将统一行情事件写入 PostgreSQL
+* 当前先支持：
+  * `TradeEvent`
+  * `KlineEvent`
+* `OrderBookSnapshotEvent` 暂不落库，先保持跳过策略
+* 新增 H2 测试覆盖，验证 `Trade / Kline` 的基础落库路径
+* 当前测试结果已更新为：`24 tests, 0 failures`
+
 ### 今日问题
 
 * 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现
@@ -149,6 +161,6 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 
 ### 下一步
 
-* 开始推进 PostgreSQL 基础落库
+* 补齐 PostgreSQL 配置说明与本地联调方式
 * 为回测核心设计最小历史数据加载与事件回放入口
 * 评估 AI Research 最小输入输出协议
