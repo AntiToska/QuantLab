@@ -187,12 +187,46 @@ Binance 行情
 
 这条链路已经可以支撑下一步继续做结构化回测结果、基础指标和 AI Research 报告输入。
 
+#### 8. 本地 PostgreSQL Docker 联调
+
+* 新增 `compose.yaml`，提供本地 PostgreSQL 16 容器配置
+* 默认数据库连接信息统一为：
+  * database: `quantlab`
+  * username: `quantlab`
+  * password: `quantlab`
+  * port: `5432`
+* 使用 Docker Compose 启动本地数据库：
+
+```bash
+docker compose up -d postgres
+```
+
+* 容器状态验证通过：`quantlab-postgres` 已进入 `healthy`
+* 使用真实 PostgreSQL 配置启动应用并验证 schema 初始化：
+
+```bash
+mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-boot:run -Dspring-boot.run.arguments="--quantlab.market-data.persistence.enabled=true --quantlab.market-data.binance.enabled=false --quantlab.market-data.okx.enabled=false"
+```
+
+* 已确认本地库中创建表：
+  * `market_data_trades`
+  * `market_data_klines`
+* 回归测试继续通过：
+
+```bash
+mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
+```
+
+* 当前测试结果：`31 tests, 0 failures`
+
 ### 今日问题
 
 * 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现
 * 早期路线过度强调 ClickHouse 等基础设施，偏离了当前最重要的学习与闭环目标
+* 本地 Docker 初次联调时需要确认 WSL 当前用户是否有 Docker API 权限；必要时通过提权命令访问 Docker socket
 
 ### 下一步
 
 * 补齐回测结果结构化输出和基础 Metrics
 * 评估 AI Research 最小输入输出协议
+* 开启真实 Binance WebSocket 后，验证 `Trade / Kline` 能持续写入本地 PostgreSQL

@@ -262,17 +262,49 @@ quantlab:
 
 如果你想在本机联调 `Binance -> PostgreSQL` 这条链路，可以按下面做。
 
-### 1. 准备数据库
+### 1. 用 Docker 启动 PostgreSQL
 
-先创建数据库和用户，示例：
+项目根目录已经提供 `compose.yaml`，默认会启动一个本地 PostgreSQL：
+
+```bash
+docker compose up -d postgres
+```
+
+默认连接信息：
+
+```text
+host: localhost
+port: 5432
+database: quantlab
+username: quantlab
+password: quantlab
+```
+
+查看容器状态：
+
+```bash
+docker compose ps
+```
+
+停止数据库：
+
+```bash
+docker compose down
+```
+
+如果需要连数据卷一起清掉：
+
+```bash
+docker compose down -v
+```
+
+如果你没有使用 Docker，也可以手动创建数据库和用户：
 
 ```sql
 create database quantlab;
 create user quantlab with password 'quantlab';
 grant all privileges on database quantlab to quantlab;
 ```
-
-如果你已经有本地 PostgreSQL，也可以直接复用已有用户和库。
 
 ### 2. 打开持久化配置
 
