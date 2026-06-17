@@ -259,6 +259,19 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * `KlineBacktestEngine` 根据 `KlineInterval` 映射年化周期
 * 补充 Sharpe 的回测测试和 JSON 导出测试
 
+#### 12. AI Research 最小输入输出协议
+
+* 在 `analytics` 模块新增 `BacktestResearchReport`
+* 新增 `BacktestResearchReportGenerator`
+* 当前先用规则生成中文研究结论，目的不是替代 LLM，而是先把输入输出接口固定下来
+* 新增 `BacktestResearchReportMarkdownExporter`
+* 当前最小报告已支持：
+  * 核心结论
+  * 风险提示
+  * 优化建议
+* 这意味着 `BacktestResult JSON -> 研究报告对象 -> Markdown 报告` 的最小链路已经成立
+* 补充 AI Research 报告生成和 markdown 导出测试
+
 ### 今日问题
 
 * 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现
