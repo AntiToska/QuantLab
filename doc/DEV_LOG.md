@@ -142,7 +142,7 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 完成并推送提交：
   * `b071524 feat(binance): add reconnect and heartbeat to websocket transport`
 
-#### 5. Market Data 持久化闭环
+#### 5. Market Data 持久化与历史读取
 
 * 新增基于原生 JDBC 的 `JdbcMarketDataEventPublisher`
 * 默认仍保持日志发布模式，避免在未配置数据库时影响本地启动和测试
@@ -158,6 +158,9 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 新增 `JdbcMarketDataHistoryReader`，支持按交易标的和时间窗口读取 `Trade / Kline`
 * 为后续 Backtest Core 提供最小历史数据输入入口
 * 当前测试结果已更新为：`27 tests, 0 failures`
+
+#### 6. Backtest Core 最小闭环
+
 * 新增 `KlineStrategy` 和 `StrategySignal`，建立最小策略接口
 * 新增 `BacktestRequest`、`BacktestResult` 和 `KlineBacktestEngine`
 * 打通从历史 K 线读取到策略逐根执行的最小回测事件循环
@@ -166,6 +169,23 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 新增 `Portfolio`，支持最小现金、持仓和权益演算
 * 回测结果增加 `finalCash / finalPosition / finalEquity`
 * 当前测试结果已更新为：`31 tests, 0 failures`
+
+#### 7. 当前阶段总结
+
+当前已经形成一条最小研究闭环：
+
+```text
+Binance 行情
+    -> MarketDataEvent
+    -> PostgreSQL
+    -> MarketDataHistoryReader
+    -> KlineBacktestEngine
+    -> KlineStrategy
+    -> Broker / Portfolio
+    -> BacktestResult
+```
+
+这条链路已经可以支撑下一步继续做结构化回测结果、基础指标和 AI Research 报告输入。
 
 ### 今日问题
 
