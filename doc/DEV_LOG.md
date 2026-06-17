@@ -154,6 +154,10 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 新增 H2 测试覆盖，验证 `Trade / Kline` 的基础落库路径
 * 当前测试结果已更新为：`24 tests, 0 failures`
 * 补充 `quantlab.market-data.persistence.*` 配置说明和本地 PostgreSQL 联调文档
+* 新增 `MarketDataHistoryReader` 历史行情读取接口
+* 新增 `JdbcMarketDataHistoryReader`，支持按交易标的和时间窗口读取 `Trade / Kline`
+* 为后续 Backtest Core 提供最小历史数据输入入口
+* 当前测试结果已更新为：`27 tests, 0 failures`
 
 ### 今日问题
 
@@ -162,6 +166,5 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 
 ### 下一步
 
-* 补齐 PostgreSQL 配置说明与本地联调方式
-* 为回测核心设计最小历史数据加载与事件回放入口
+* 开始为 Backtest Core 设计最小历史数据加载与事件回放入口
 * 评估 AI Research 最小输入输出协议

@@ -32,6 +32,8 @@
 * Binance 消息解析与订阅建模
 * WebSocket transport 抽象
 * 真实 WebSocket 的重连、订阅重放与心跳基础能力
+* PostgreSQL 基础落库入口
+* 历史行情读取入口
 * 基础测试体系与回归验证
 
 相关文档：
@@ -125,8 +127,8 @@
 
 * [x] Binance WebSocket 基础接入
 * [x] 统一行情事件模型
-* [ ] PostgreSQL 基础落库
-* [ ] 历史归档与回放入口
+* [x] PostgreSQL 基础落库
+* [x] 历史归档与回放入口
 
 完成标准：
 
@@ -250,15 +252,16 @@
 * [x] Binance WebSocket Connector 基础链路
 * [ ] Binance 真实消息消费联调
 * [x] Market Data Event Model
-* [ ] Trade 数据落库
-* [ ] Kline 数据落库
+* [x] Trade 数据落库
+* [x] Kline 数据落库
 * [ ] OrderBook Snapshot 数据落库
 
 ---
 
 ## Backtest Core
 
-* [ ] 历史数据加载器
+* [x] Market Data 历史读取入口
+* [ ] Backtest 历史数据加载器
 * [ ] 事件驱动回测循环
 * [ ] Broker Simulator
 * [ ] Position / Portfolio 演算
