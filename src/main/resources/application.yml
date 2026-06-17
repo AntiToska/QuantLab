@@ -23,6 +23,9 @@ quantlab:
       enabled: true
       ws-url: wss://stream.binance.com:9443/ws
       real-client-enabled: false
+      proxy-enabled: false
+      proxy-host:
+      proxy-port:
       reconnect-delay-millis: 3000
       heartbeat-interval-seconds: 15
       symbols:
@@ -32,6 +35,9 @@ quantlab:
       enabled: false
       ws-url: wss://ws.okx.com:8443/ws/v5/public
       real-client-enabled: false
+      proxy-enabled: false
+      proxy-host:
+      proxy-port:
       reconnect-delay-millis: 3000
       heartbeat-interval-seconds: 15
       symbols:
@@ -40,6 +46,9 @@ quantlab:
       enabled: false
       ws-url: wss://stream.bybit.com/v5/public/spot
       real-client-enabled: false
+      proxy-enabled: false
+      proxy-host:
+      proxy-port:
       reconnect-delay-millis: 3000
       heartbeat-interval-seconds: 15
       symbols:

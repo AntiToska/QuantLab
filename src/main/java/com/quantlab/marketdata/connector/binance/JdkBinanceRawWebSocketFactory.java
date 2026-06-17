@@ -1,5 +1,8 @@
 package com.quantlab.marketdata.connector.binance;
 
+import com.quantlab.common.config.QuantLabProperties;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -15,7 +18,11 @@ import org.springframework.stereotype.Component;
 @Primary
 public class JdkBinanceRawWebSocketFactory implements BinanceRawWebSocketFactory {
 
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final HttpClient httpClient;
+
+    public JdkBinanceRawWebSocketFactory(QuantLabProperties properties) {
+        this.httpClient = buildHttpClient(properties.marketData().binance());
+    }
 
     @Override
     public BinanceRawWebSocket connect(URI uri, BinanceWebSocketListener listener) {
@@ -83,5 +90,30 @@ public class JdkBinanceRawWebSocketFactory implements BinanceRawWebSocketFactory
         public void onError(WebSocket webSocket, Throwable error) {
             listener.onError(error);
         }
+    }
+
+    private HttpClient buildHttpClient(QuantLabProperties.ExchangeConnectorProperties properties) {
+        HttpClient.Builder builder = HttpClient.newBuilder();
+        if (properties.proxyEnabled()) {
+            builder.proxy(ProxySelector.of(new InetSocketAddress(
+                    required(properties.proxyHost(), "binance.proxyHost"),
+                    required(properties.proxyPort(), "binance.proxyPort")
+            )));
+        }
+        return builder.build();
+    }
+
+    private String required(String value, String name) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(name + " must not be blank when proxy is enabled");
+        }
+        return value.trim();
+    }
+
+    private int required(Integer value, String name) {
+        if (value == null || value <= 0) {
+            throw new IllegalArgumentException(name + " must be greater than 0 when proxy is enabled");
+        }
+        return value;
     }
 }

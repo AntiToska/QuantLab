@@ -34,11 +34,14 @@ class ConfigurableBinanceWebSocketClientTests {
                                         List.of("BTCUSDT"),
                                         "wss://stream.binance.com:9443/ws",
                                         true,
+                                        false,
+                                        null,
+                                        null,
                                         3000,
                                         15
                                 ),
-                                new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT"), null, false, 3000, 15),
-                                new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT"), null, false, 3000, 15)
+                                new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT"), null, false, false, null, null, 3000, 15),
+                                new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT"), null, false, false, null, null, 3000, 15)
                         ),
                         defaultResearchProperties()
                 ),

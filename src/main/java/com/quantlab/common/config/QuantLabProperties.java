@@ -49,6 +49,9 @@ public record QuantLabProperties(
             @NotEmpty List<@NotBlank String> symbols,
             String wsUrl,
             boolean realClientEnabled,
+            boolean proxyEnabled,
+            String proxyHost,
+            Integer proxyPort,
             long reconnectDelayMillis,
             long heartbeatIntervalSeconds
     ) {

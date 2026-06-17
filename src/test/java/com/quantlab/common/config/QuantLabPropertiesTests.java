@@ -20,6 +20,27 @@ class QuantLabPropertiesTests {
                     "quantlab.market-data.capture-run.symbol=BTCUSDT",
                     "quantlab.market-data.capture-run.interval=ONE_MINUTE",
                     "quantlab.market-data.capture-run.duration-seconds=45",
+                    "quantlab.market-data.binance.enabled=true",
+                    "quantlab.market-data.binance.ws-url=wss://stream.binance.com:443/ws",
+                    "quantlab.market-data.binance.real-client-enabled=true",
+                    "quantlab.market-data.binance.symbols[0]=BTCUSDT",
+                    "quantlab.market-data.binance.proxy-enabled=true",
+                    "quantlab.market-data.binance.proxy-host=172.17.176.1",
+                    "quantlab.market-data.binance.proxy-port=7890",
+                    "quantlab.market-data.binance.reconnect-delay-millis=3000",
+                    "quantlab.market-data.binance.heartbeat-interval-seconds=15",
+                    "quantlab.market-data.okx.enabled=false",
+                    "quantlab.market-data.okx.ws-url=wss://ws.okx.com:8443/ws/v5/public",
+                    "quantlab.market-data.okx.real-client-enabled=false",
+                    "quantlab.market-data.okx.symbols[0]=BTCUSDT",
+                    "quantlab.market-data.okx.reconnect-delay-millis=3000",
+                    "quantlab.market-data.okx.heartbeat-interval-seconds=15",
+                    "quantlab.market-data.bybit.enabled=false",
+                    "quantlab.market-data.bybit.ws-url=wss://stream.bybit.com/v5/public/spot",
+                    "quantlab.market-data.bybit.real-client-enabled=false",
+                    "quantlab.market-data.bybit.symbols[0]=BTCUSDT",
+                    "quantlab.market-data.bybit.reconnect-delay-millis=3000",
+                    "quantlab.market-data.bybit.heartbeat-interval-seconds=15",
                     "quantlab.research.backtest-run.enabled=true",
                     "quantlab.research.backtest-run.exchange=BINANCE",
                     "quantlab.research.backtest-run.symbol=BTCUSDT",
@@ -50,6 +71,9 @@ class QuantLabPropertiesTests {
             assertThat(properties.marketData().defaultSymbol()).isEqualTo("ETHUSDT");
             assertThat(properties.marketData().captureRun().enabled()).isTrue();
             assertThat(properties.marketData().captureRun().durationSeconds()).isEqualTo(45);
+            assertThat(properties.marketData().binance().proxyEnabled()).isTrue();
+            assertThat(properties.marketData().binance().proxyHost()).isEqualTo("172.17.176.1");
+            assertThat(properties.marketData().binance().proxyPort()).isEqualTo(7890);
             assertThat(properties.research().backtestRun().enabled()).isTrue();
             assertThat(properties.research().backtestRun().strategy()).isEqualTo("close-price-momentum");
             assertThat(properties.research().backtestRun().outputDirectory()).isEqualTo("./output/research");

@@ -275,12 +275,40 @@ quantlab:
       symbol: BTCUSDT
       interval: ONE_MINUTE
       duration-seconds: 30
+    binance:
+      real-client-enabled: true
+      ws-url: wss://stream.binance.com:443/ws
+      proxy-enabled: false
+      proxy-host:
+      proxy-port:
 ```
+
+如果你的网络环境必须通过代理访问 Binance，建议显式开启这组配置：
+
+```yaml
+quantlab:
+  market-data:
+    binance:
+      real-client-enabled: true
+      ws-url: wss://stream.binance.com:443/ws
+      proxy-enabled: true
+      proxy-host: 172.17.176.1
+      proxy-port: 7890
+```
+
+这样项目内部的 JDK `HttpClient` 会显式通过代理发起 WebSocket 连接，
+不再依赖系统环境变量或 JVM 全局代理参数是否被正确继承。
 
 典型联调命令：
 
 ```bash
 mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-boot:run -Dspring-boot.run.arguments="--quantlab.market-data.persistence.enabled=true --quantlab.market-data.capture-run.enabled=true --quantlab.market-data.capture-run.exchange=BINANCE --quantlab.market-data.capture-run.symbol=BTCUSDT --quantlab.market-data.capture-run.interval=ONE_MINUTE --quantlab.market-data.capture-run.duration-seconds=20 --quantlab.market-data.binance.enabled=true --quantlab.market-data.binance.real-client-enabled=true --quantlab.market-data.binance.symbols[0]=BTCUSDT --quantlab.market-data.okx.enabled=false --quantlab.research.seed-data.enabled=false --quantlab.research.backtest-run.enabled=false"
+```
+
+如果你使用 `SPRING_APPLICATION_JSON` 管理配置，推荐把代理参数也放进同一份配置里，再直接执行：
+
+```bash
+mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-boot:run
 ```
 
 运行完成后，应用会自动停机，并在日志中输出：

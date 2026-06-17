@@ -66,6 +66,7 @@ public class MarketDataCaptureRunner {
     }
 
     @EventListener(ApplicationReadyEvent.class)
+    @Order(Ordered.LOWEST_PRECEDENCE)
     public void startCapture() {
         QuantLabProperties.MarketDataCaptureProperties config = properties.marketData().captureRun();
         String exchange = required(config.exchange(), "exchange");

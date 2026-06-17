@@ -33,6 +33,9 @@ class MarketDataServiceTests {
                                         List.of("BTCUSDT", "ETHUSDT"),
                                         "wss://stream.binance.com:9443/ws",
                                         false,
+                                        false,
+                                        null,
+                                        null,
                                         3000,
                                         15
                                 ),
@@ -41,6 +44,9 @@ class MarketDataServiceTests {
                                         List.of("BTCUSDT"),
                                         "wss://ws.okx.com:8443/ws/v5/public",
                                         false,
+                                        false,
+                                        null,
+                                        null,
                                         3000,
                                         15
                                 ),
@@ -49,6 +55,9 @@ class MarketDataServiceTests {
                                         List.of("BTCUSDT"),
                                         "wss://stream.bybit.com/v5/public/spot",
                                         false,
+                                        false,
+                                        null,
+                                        null,
                                         3000,
                                         15
                                 )
@@ -86,6 +95,9 @@ class MarketDataServiceTests {
                                         List.of("BTCUSDT"),
                                         "wss://stream.binance.com:9443/ws",
                                         false,
+                                        false,
+                                        null,
+                                        null,
                                         3000,
                                         15
                                 ),
@@ -94,6 +106,9 @@ class MarketDataServiceTests {
                                         List.of("BTCUSDT"),
                                         "wss://ws.okx.com:8443/ws/v5/public",
                                         false,
+                                        false,
+                                        null,
+                                        null,
                                         3000,
                                         15
                                 ),
@@ -102,6 +117,9 @@ class MarketDataServiceTests {
                                         List.of("BTCUSDT"),
                                         "wss://stream.bybit.com/v5/public/spot",
                                         false,
+                                        false,
+                                        null,
+                                        null,
                                         3000,
                                         15
                                 )
