@@ -23,6 +23,7 @@ public record QuantLabProperties(
     public record MarketDataProperties(
             @NotEmpty List<@NotBlank String> exchanges,
             @NotBlank String defaultSymbol,
+            @Valid MarketDataCaptureProperties captureRun,
             @Valid ExchangeConnectorProperties binance,
             @Valid ExchangeConnectorProperties okx,
             @Valid ExchangeConnectorProperties bybit
@@ -50,6 +51,21 @@ public record QuantLabProperties(
             boolean realClientEnabled,
             long reconnectDelayMillis,
             long heartbeatIntervalSeconds
+    ) {
+    }
+
+    /**
+     * 本地实时行情采集验证入口配置。
+     * <p>
+     * 用于在显式开启时拉起真实 WebSocket 采集固定时长，
+     * 然后输出 PostgreSQL 中的增量摘要并自动停机。
+     */
+    public record MarketDataCaptureProperties(
+            boolean enabled,
+            String exchange,
+            String symbol,
+            String interval,
+            long durationSeconds
     ) {
     }
 

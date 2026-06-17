@@ -22,6 +22,13 @@ class ConfigurableBinanceWebSocketClientTests {
                         new QuantLabProperties.MarketDataProperties(
                                 List.of("binance"),
                                 "BTCUSDT",
+                                new QuantLabProperties.MarketDataCaptureProperties(
+                                        false,
+                                        "BINANCE",
+                                        "BTCUSDT",
+                                        "ONE_MINUTE",
+                                        30
+                                ),
                                 new QuantLabProperties.ExchangeConnectorProperties(
                                         true,
                                         List.of("BTCUSDT"),

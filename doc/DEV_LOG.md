@@ -335,6 +335,27 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-
     * `output/research/20260617-172002/research-report.md`
 * 当前测试结果已更新为：`40 tests, 0 failures`
 
+#### 17. 实时行情采集验证入口
+
+* 在 `QuantLabProperties` 中新增 `quantlab.market-data.capture-run.*` 配置
+* 新增 `MarketDataCaptureRunner`
+* 当前可以在显式开启时：
+  * 拉起真实 Binance WebSocket
+  * 采集固定时长
+  * 统计 PostgreSQL 中 `Trade / Kline` 的基线与增量
+  * 自动停机并输出联调摘要
+* 新增本地联调命令说明，方便后续重复验证真实采集链路
+* 本次在当前执行环境完成过一次真实联调尝试：
+  * 时间：`2026-06-17 17:40 +08:00`
+  * 结果：应用正常启动、自动停机、重连逻辑生效
+  * 但到 Binance WebSocket 的连接持续报 `ConnectException`
+  * 最终增量为：
+    * `capturedTrades=0`
+    * `capturedKlines=0`
+* 结论：
+  * 当前代码链路和采集入口可用
+  * 当前执行环境到 Binance 实时 WebSocket 仍存在网络可达性问题
+
 ### 今日问题
 
 * 真实 PostgreSQL JDBC 与 H2 测试库在时间类型和 upsert 语法上存在方言差异，联调时需要分别兼容
@@ -343,6 +364,7 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-
 
 ### 下一步
 
-* 开启真实 Binance WebSocket，验证实时 `Trade / Kline` 持续入库
+* 在可直连 Binance WebSocket 的网络环境下重跑 `capture-run`
+* 验证实时 `Trade` 持续入库，再观察更长窗口下 `Kline` 的闭合写入
 * 在真实或归档历史样本上验证策略、指标和研究报告输出是否稳定
 * 继续收敛研究闭环，避免过早扩展更多交易所或更重基础设施

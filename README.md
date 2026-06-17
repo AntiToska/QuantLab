@@ -256,6 +256,45 @@ quantlab:
 
 * `OrderBookSnapshotEvent`
 
+## 本地实时采集联调
+
+当前已经提供一个显式的本地采集 runner，用来验证：
+
+* 真实 Binance WebSocket 是否能连通
+* 实时 `Trade / Kline` 是否能写入 PostgreSQL
+* 采集结束后是否能自动输出增量摘要
+
+相关配置：
+
+```yaml
+quantlab:
+  market-data:
+    capture-run:
+      enabled: false
+      exchange: BINANCE
+      symbol: BTCUSDT
+      interval: ONE_MINUTE
+      duration-seconds: 30
+```
+
+典型联调命令：
+
+```bash
+mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-boot:run -Dspring-boot.run.arguments="--quantlab.market-data.persistence.enabled=true --quantlab.market-data.capture-run.enabled=true --quantlab.market-data.capture-run.exchange=BINANCE --quantlab.market-data.capture-run.symbol=BTCUSDT --quantlab.market-data.capture-run.interval=ONE_MINUTE --quantlab.market-data.capture-run.duration-seconds=20 --quantlab.market-data.binance.enabled=true --quantlab.market-data.binance.real-client-enabled=true --quantlab.market-data.binance.symbols[0]=BTCUSDT --quantlab.market-data.okx.enabled=false --quantlab.research.seed-data.enabled=false --quantlab.research.backtest-run.enabled=false"
+```
+
+运行完成后，应用会自动停机，并在日志中输出：
+
+* baseline trades / klines
+* final trades / klines
+* captured trades / klines
+
+如果增量为 `0`，通常意味着：
+
+* 当前环境无法连通 Binance WebSocket
+* 代理或防火墙拦截了 `wss://stream.binance.com:9443/ws`
+* 采集窗口过短，尚未等到新 K 线闭合
+
 ---
 
 ## Research 输出

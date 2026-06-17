@@ -13,6 +13,12 @@ quantlab:
       - binance
       - okx
     default-symbol: BTCUSDT
+    capture-run:
+      enabled: false
+      exchange: BINANCE
+      symbol: BTCUSDT
+      interval: ONE_MINUTE
+      duration-seconds: 30
     binance:
       enabled: true
       ws-url: wss://stream.binance.com:9443/ws

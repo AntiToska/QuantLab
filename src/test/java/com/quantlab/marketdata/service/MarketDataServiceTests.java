@@ -21,6 +21,13 @@ class MarketDataServiceTests {
                         new QuantLabProperties.MarketDataProperties(
                                 List.of("binance", "okx"),
                                 "BTCUSDT",
+                                new QuantLabProperties.MarketDataCaptureProperties(
+                                        false,
+                                        "BINANCE",
+                                        "BTCUSDT",
+                                        "ONE_MINUTE",
+                                        30
+                                ),
                                 new QuantLabProperties.ExchangeConnectorProperties(
                                         true,
                                         List.of("BTCUSDT", "ETHUSDT"),
@@ -67,6 +74,13 @@ class MarketDataServiceTests {
                         new QuantLabProperties.MarketDataProperties(
                                 List.of("binance"),
                                 "BTCUSDT",
+                                new QuantLabProperties.MarketDataCaptureProperties(
+                                        false,
+                                        "BINANCE",
+                                        "BTCUSDT",
+                                        "ONE_MINUTE",
+                                        30
+                                ),
                                 new QuantLabProperties.ExchangeConnectorProperties(
                                         true,
                                         List.of("BTCUSDT"),

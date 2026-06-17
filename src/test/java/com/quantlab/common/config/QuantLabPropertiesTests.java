@@ -15,6 +15,11 @@ class QuantLabPropertiesTests {
                     "quantlab.market-data.exchanges[0]=binance",
                     "quantlab.market-data.exchanges[1]=okx",
                     "quantlab.market-data.default-symbol=ETHUSDT",
+                    "quantlab.market-data.capture-run.enabled=true",
+                    "quantlab.market-data.capture-run.exchange=BINANCE",
+                    "quantlab.market-data.capture-run.symbol=BTCUSDT",
+                    "quantlab.market-data.capture-run.interval=ONE_MINUTE",
+                    "quantlab.market-data.capture-run.duration-seconds=45",
                     "quantlab.research.backtest-run.enabled=true",
                     "quantlab.research.backtest-run.exchange=BINANCE",
                     "quantlab.research.backtest-run.symbol=BTCUSDT",
@@ -43,6 +48,8 @@ class QuantLabPropertiesTests {
 
             assertThat(properties.marketData().exchanges()).containsExactly("binance", "okx");
             assertThat(properties.marketData().defaultSymbol()).isEqualTo("ETHUSDT");
+            assertThat(properties.marketData().captureRun().enabled()).isTrue();
+            assertThat(properties.marketData().captureRun().durationSeconds()).isEqualTo(45);
             assertThat(properties.research().backtestRun().enabled()).isTrue();
             assertThat(properties.research().backtestRun().strategy()).isEqualTo("close-price-momentum");
             assertThat(properties.research().backtestRun().outputDirectory()).isEqualTo("./output/research");
