@@ -67,4 +67,18 @@ class BinanceMessageParserTests {
         assertThat(klineEvent.interval().code()).isEqualTo("1m");
         assertThat(klineEvent.closed()).isTrue();
     }
+
+    @Test
+    void shouldTreatSubscriptionAckAsControlPayload() {
+        String payload = """
+                {
+                  "result": null,
+                  "id": 1
+                }
+                """;
+
+        BinancePayload parsedPayload = parser.parse(payload);
+
+        assertThat(parsedPayload.controlMessage()).isTrue();
+    }
 }

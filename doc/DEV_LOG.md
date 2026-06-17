@@ -356,6 +356,36 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-
   * 当前代码链路和采集入口可用
   * 当前执行环境到 Binance 实时 WebSocket 仍存在网络可达性问题
 
+#### 18. 真实 Binance 代理接入闭环打通
+
+* 为 Binance JDK WebSocket 客户端新增显式代理配置：
+  * `quantlab.market-data.binance.proxy-enabled`
+  * `quantlab.market-data.binance.proxy-host`
+  * `quantlab.market-data.binance.proxy-port`
+* 当前无需再依赖 JVM 全局代理参数或系统环境变量是否被正确继承
+* 修正 `MarketDataCaptureRunner` 与 `MarketDataService` 的启动顺序
+* 保证本地采集 runner 会先输出预检与基线，再启动连接器和等待采集结果
+* 修正真实 Binance WebSocket 解析兼容问题：
+  * 忽略订阅确认等控制类消息
+  * 忽略 `Trade / Kline` DTO 中的未知字段
+* 在用户本机网络环境完成一次真实 Binance + PostgreSQL 联调成功验证：
+  * 时间：`2026-06-18 01:05 +08:00`
+  * `wsUrl=wss://stream.binance.com:443/ws`
+  * `tcpReachable=true`
+  * `capturedTrades=296`
+  * `capturedKlines=1`
+* 这意味着当前 Phase 1 的核心链路已经在真实行情下成立：
+
+```text
+Binance WebSocket
+  -> 代理接入
+  -> 统一事件解析
+  -> PostgreSQL
+  -> 历史读取入口
+```
+
+* 当前测试结果已更新为：`41 tests, 0 failures`
+
 ### 今日问题
 
 * 真实 PostgreSQL JDBC 与 H2 测试库在时间类型和 upsert 语法上存在方言差异，联调时需要分别兼容
@@ -364,7 +394,7 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-
 
 ### 下一步
 
-* 在可直连 Binance WebSocket 的网络环境下重跑 `capture-run`
-* 验证实时 `Trade` 持续入库，再观察更长窗口下 `Kline` 的闭合写入
+* 基于真实 Binance 落库数据，验证 `JdbcMarketDataHistoryReader -> Backtest` 的真实数据回放闭环
+* 评估是否增加一个“实时采集 -> 自动回测/报告”的串联 runner
 * 在真实或归档历史样本上验证策略、指标和研究报告输出是否稳定
 * 继续收敛研究闭环，避免过早扩展更多交易所或更重基础设施

@@ -74,6 +74,10 @@ public class BinanceMarketDataConnector extends AbstractMarketDataConnector {
      */
     public void handleMessage(String payload, Instant receivedAt) {
         BinancePayload parsedPayload = messageParser.parse(payload);
+        if (parsedPayload.controlMessage()) {
+            log.debug("Ignoring Binance control payload. payload={}", payload);
+            return;
+        }
         MarketDataEvent event = eventMapper.toEvent(parsedPayload, receivedAt);
         eventPublisher.publish(event);
     }

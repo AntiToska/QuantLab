@@ -25,6 +25,9 @@ public class BinanceMessageParser {
     public BinancePayload parse(String payload) {
         try {
             JsonNode root = objectMapper.readTree(payload);
+            if (!root.hasNonNull("e")) {
+                return BinancePayload.control();
+            }
             String eventType = text(root, "e");
 
             return switch (eventType) {

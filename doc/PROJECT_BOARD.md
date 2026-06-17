@@ -20,8 +20,8 @@
 
 当前工作重点：
 
-* 验证 Binance 行情接入到 PostgreSQL 的真实数据闭环
-* 打通 `Backtest -> JSON -> Research Report` 的统一执行入口
+* 用真实 Binance 落库数据验证 `HistoryReader -> Backtest -> Report` 的完整研究闭环
+* 将当前真实采集能力收敛为稳定可复用的本地联调入口
 * 保持研究闭环收敛，不提前扩展无关基础设施
 
 最近已完成：
@@ -43,6 +43,8 @@
 * 最小研究流水线入口
 * 基础测试体系与回归验证
 * 本地实时采集 runner
+* Binance 显式代理接入
+* 真实 Binance + PostgreSQL 联调成功
 
 相关文档：
 
@@ -86,6 +88,7 @@
 * 能将核心行情数据写入 PostgreSQL
 * 能为后续回测提供基础历史数据输入
 * 关键链路具备基础测试和回归验证
+* 至少完成一次真实 Binance 采集成功验证
 
 ---
 

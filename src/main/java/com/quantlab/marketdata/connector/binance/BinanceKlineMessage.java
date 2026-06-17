@@ -1,10 +1,12 @@
 package com.quantlab.marketdata.connector.binance;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Binance kline 消息 DTO。
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record BinanceKlineMessage(
         @JsonProperty("e") String eventType,
         @JsonProperty("E") long eventTime,
@@ -15,6 +17,7 @@ public record BinanceKlineMessage(
     /**
      * K 线内部对象。
      */
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record KlineData(
             @JsonProperty("t") long openTime,
             @JsonProperty("T") long closeTime,
