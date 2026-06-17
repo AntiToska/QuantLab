@@ -21,7 +21,7 @@ quantlab:
       duration-seconds: 30
     binance:
       enabled: true
-      ws-url: wss://stream.binance.com:9443/ws
+      ws-url: wss://stream.binance.com:443/ws
       real-client-enabled: false
       proxy-enabled: false
       proxy-host:
@@ -62,6 +62,7 @@ quantlab:
       from-inclusive: 2026-06-17T00:00:00Z
       to-exclusive: 2026-06-17T01:00:00Z
       strategy: close-price-momentum
+      latest-bars:
       output-directory: ./output/research
       initial-cash: "10000"
       trade-quantity: "1"

@@ -1,6 +1,8 @@
 package com.quantlab.analytics;
 
 import com.quantlab.common.config.QuantLabProperties;
+import com.quantlab.marketdata.history.KlineHistoryWindow;
+import com.quantlab.marketdata.history.MarketDataWindowInspector;
 import com.quantlab.marketdata.model.Exchange;
 import com.quantlab.marketdata.model.Instrument;
 import com.quantlab.marketdata.model.KlineInterval;
@@ -10,12 +12,14 @@ import com.quantlab.strategy.KlineStrategy;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -35,21 +39,33 @@ public class BacktestResearchRunner implements ApplicationRunner {
 
     private final QuantLabProperties properties;
     private final BacktestResearchPipeline pipeline;
+    private final ObjectProvider<MarketDataWindowInspector> windowInspectorProvider;
 
-    public BacktestResearchRunner(QuantLabProperties properties, BacktestResearchPipeline pipeline) {
+    public BacktestResearchRunner(
+            QuantLabProperties properties,
+            BacktestResearchPipeline pipeline,
+            ObjectProvider<MarketDataWindowInspector> windowInspectorProvider
+    ) {
         this.properties = properties;
         this.pipeline = pipeline;
+        this.windowInspectorProvider = windowInspectorProvider;
     }
 
     @Override
     public void run(ApplicationArguments args) {
         QuantLabProperties.BacktestRunProperties config = properties.research().backtestRun();
+        Instrument instrument = new Instrument(
+                Exchange.fromValue(required(config.exchange(), "exchange")),
+                required(config.symbol(), "symbol")
+        );
+        KlineInterval interval = KlineInterval.valueOf(required(config.interval(), "interval").trim().toUpperCase());
+        KlineHistoryWindow window = resolveWindow(config, instrument, interval);
         BacktestResearchOutputPaths outputPaths = pipeline.runAndWrite(
                 new BacktestRequest(
-                        new Instrument(Exchange.fromValue(required(config.exchange(), "exchange")), required(config.symbol(), "symbol")),
-                        KlineInterval.valueOf(required(config.interval(), "interval").trim().toUpperCase()),
-                        Instant.parse(required(config.fromInclusive(), "fromInclusive")),
-                        Instant.parse(required(config.toExclusive(), "toExclusive")),
+                        instrument,
+                        interval,
+                        window.fromInclusive(),
+                        window.toExclusive(),
                         new BigDecimal(required(config.initialCash(), "initialCash")),
                         new BigDecimal(required(config.tradeQuantity(), "tradeQuantity"))
                 ),
@@ -62,6 +78,39 @@ public class BacktestResearchRunner implements ApplicationRunner {
                 outputPaths.backtestResultJsonPath(),
                 outputPaths.researchReportMarkdownPath()
         );
+    }
+
+    private KlineHistoryWindow resolveWindow(
+            QuantLabProperties.BacktestRunProperties config,
+            Instrument instrument,
+            KlineInterval interval
+    ) {
+        Integer latestBars = config.latestBars();
+        if (latestBars == null) {
+            return new KlineHistoryWindow(
+                    Instant.parse(required(config.fromInclusive(), "fromInclusive")),
+                    Instant.parse(required(config.toExclusive(), "toExclusive")),
+                    1
+            );
+        }
+        if (latestBars <= 0) {
+            throw new IllegalArgumentException("latestBars must be greater than 0");
+        }
+
+        MarketDataWindowInspector inspector = Optional.ofNullable(windowInspectorProvider.getIfAvailable())
+                .orElseThrow(() -> new IllegalStateException("MarketDataWindowInspector is required when latestBars is set"));
+        KlineHistoryWindow window = inspector.latestKlineWindow(instrument, interval, latestBars)
+                .orElseThrow(() -> new IllegalStateException("No persisted kline window available for latestBars=" + latestBars));
+        log.info(
+                "Resolved latest persisted kline window. exchange={}, symbol={}, interval={}, bars={}, fromInclusive={}, toExclusive={}",
+                instrument.exchange(),
+                instrument.symbol(),
+                interval,
+                window.bars(),
+                window.fromInclusive(),
+                window.toExclusive()
+        );
+        return window;
     }
 
     private KlineStrategy resolveStrategy(String strategy) {

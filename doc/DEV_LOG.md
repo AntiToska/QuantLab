@@ -398,3 +398,85 @@ Binance WebSocket
 * 评估是否增加一个“实时采集 -> 自动回测/报告”的串联 runner
 * 在真实或归档历史样本上验证策略、指标和研究报告输出是否稳定
 * 继续收敛研究闭环，避免过早扩展更多交易所或更重基础设施
+
+---
+
+## 2026-06-18
+
+### 今日目标
+
+* 基于真实 Binance 落库数据完成 `HistoryReader -> Backtest -> Report` 闭环验证
+* 为研究执行入口补齐“自动取最近 N 根 K 线”的能力
+* 更新阶段文档，正式收口 `Phase 1 - Market Data`
+
+### 今日完成
+
+#### 1. 最新历史窗口自动探查
+
+* 新增 `MarketDataWindowInspector` 历史窗口探查接口
+* 新增 `JdbcMarketDataWindowInspector`，支持从 PostgreSQL 反推出最近一段可回放 K 线窗口
+* 新增 `KlineHistoryWindow`，统一封装：
+  * `fromInclusive`
+  * `toExclusive`
+  * `bars`
+* 在 `quantlab.research.backtest-run.*` 中新增 `latest-bars`
+* `BacktestResearchRunner` 现在支持两种运行模式：
+  * 显式指定 `from-inclusive / to-exclusive`
+  * 只指定 `latest-bars`，由系统自动回放最近 N 根已落库 K 线
+
+#### 2. 真实落库数据研究闭环验证
+
+* 使用本地 PostgreSQL 中真实采集的 Binance `BTCUSDT 1m` 数据完成一次研究回放验证
+* 本次运行命令核心参数：
+  * `quantlab.market-data.persistence.enabled=true`
+  * `quantlab.research.backtest-run.enabled=true`
+  * `quantlab.research.backtest-run.exchange=BINANCE`
+  * `quantlab.research.backtest-run.symbol=BTCUSDT`
+  * `quantlab.research.backtest-run.interval=ONE_MINUTE`
+  * `quantlab.research.backtest-run.strategy=close-price-momentum`
+  * `quantlab.research.backtest-run.latest-bars=60`
+* 真实运行结果：
+  * 自动解析窗口：`fromInclusive=2026-06-17T01:01:00Z`
+  * 自动解析窗口：`toExclusive=2026-06-17T17:06:00.999Z`
+  * `processedBars=60`
+* 成功生成研究产物：
+  * `output/research/20260618-phase1-closeout/backtest-result.json`
+  * `output/research/20260618-phase1-closeout/research-report.md`
+
+#### 3. Phase 1 验收结论
+
+当前已确认以下真实链路成立：
+
+```text
+Binance WebSocket
+  -> 代理接入
+  -> 统一事件解析
+  -> PostgreSQL
+  -> JdbcMarketDataHistoryReader
+  -> KlineBacktestEngine
+  -> backtest-result.json
+  -> research-report.md
+```
+
+这意味着 `Phase 1 - Market Data` 已经完成“可采集、可落库、可回放、可供研究消费”的阶段目标，可以正式把主要工作重心切到 `Phase 2 - Backtest Core`。
+
+#### 4. 测试与验证
+
+* 本地回归测试通过：
+
+```bash
+mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
+```
+
+* 当前测试结果：`43 tests, 0 failures`
+
+### 今日问题
+
+* 当前托管执行环境默认不能直接访问本地 PostgreSQL，真实数据库联调仍需要在提权或用户终端环境下完成
+* 当前示例策略仍然偏演示性质，真实研究结论还不能直接代表策略有效性
+
+### 下一步
+
+* 继续补强 `Phase 2 - Backtest Core` 的研究运行稳定性
+* 收敛策略执行和指标输出边界，避免回测入口继续膨胀
+* 为后续 `Strategy + Metrics` / `AI Research` 留出更稳定的输入协议

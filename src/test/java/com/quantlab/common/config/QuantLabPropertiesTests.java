@@ -48,6 +48,7 @@ class QuantLabPropertiesTests {
                     "quantlab.research.backtest-run.from-inclusive=2026-06-17T00:00:00Z",
                     "quantlab.research.backtest-run.to-exclusive=2026-06-17T01:00:00Z",
                     "quantlab.research.backtest-run.strategy=close-price-momentum",
+                    "quantlab.research.backtest-run.latest-bars=20",
                     "quantlab.research.backtest-run.output-directory=./output/research",
                     "quantlab.research.backtest-run.initial-cash=10000",
                     "quantlab.research.backtest-run.trade-quantity=1",
@@ -76,6 +77,7 @@ class QuantLabPropertiesTests {
             assertThat(properties.marketData().binance().proxyPort()).isEqualTo(7890);
             assertThat(properties.research().backtestRun().enabled()).isTrue();
             assertThat(properties.research().backtestRun().strategy()).isEqualTo("close-price-momentum");
+            assertThat(properties.research().backtestRun().latestBars()).isEqualTo(20);
             assertThat(properties.research().backtestRun().outputDirectory()).isEqualTo("./output/research");
             assertThat(properties.research().seedData().enabled()).isTrue();
             assertThat(properties.research().seedData().bars()).isEqualTo(120);

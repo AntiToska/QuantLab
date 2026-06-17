@@ -322,7 +322,7 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository spring-
 如果增量为 `0`，通常意味着：
 
 * 当前环境无法连通 Binance WebSocket
-* 代理或防火墙拦截了 `wss://stream.binance.com:9443/ws`
+* 代理或防火墙拦截了 `wss://stream.binance.com:443/ws`
 * 采集窗口过短，尚未等到新 K 线闭合
 
 排查时可以先看：

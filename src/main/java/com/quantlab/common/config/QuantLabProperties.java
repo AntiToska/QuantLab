@@ -94,6 +94,7 @@ public record QuantLabProperties(
             String fromInclusive,
             String toExclusive,
             String strategy,
+            Integer latestBars,
             String outputDirectory,
             String initialCash,
             String tradeQuantity

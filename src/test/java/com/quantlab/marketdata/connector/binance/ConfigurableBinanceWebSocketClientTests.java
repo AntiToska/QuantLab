@@ -226,6 +226,7 @@ class ConfigurableBinanceWebSocketClientTests {
                         "2026-06-17T00:00:00Z",
                         "2026-06-17T01:00:00Z",
                         "close-price-momentum",
+                        null,
                         "./output/research",
                         "10000",
                         "1"
