@@ -68,8 +68,12 @@ public class KlineBacktestEngine {
                 : metricsCollector.toMetrics();
         return new BacktestResult(
                 strategy.name(),
+                request.instrument(),
+                request.interval(),
                 request.fromInclusive(),
                 request.toExclusive(),
+                request.initialCash(),
+                request.tradeQuantity(),
                 events.size(),
                 buySignals,
                 sellSignals,

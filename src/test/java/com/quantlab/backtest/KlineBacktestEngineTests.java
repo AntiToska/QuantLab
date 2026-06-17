@@ -33,6 +33,10 @@ class KlineBacktestEngineTests {
         BacktestResult result = engine.run(request(), strategy);
 
         assertThat(result.processedBars()).isEqualTo(3);
+        assertThat(result.instrument()).isEqualTo(new Instrument(Exchange.BINANCE, "BTCUSDT"));
+        assertThat(result.interval()).isEqualTo(KlineInterval.ONE_MINUTE);
+        assertThat(result.initialCash()).isEqualByComparingTo(new BigDecimal("10000"));
+        assertThat(result.tradeQuantity()).isEqualByComparingTo(BigDecimal.ONE);
         assertThat(result.buySignals()).isEqualTo(1);
         assertThat(result.sellSignals()).isEqualTo(1);
         assertThat(result.holdSignals()).isEqualTo(1);

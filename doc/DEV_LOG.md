@@ -236,12 +236,26 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 补充回测指标、空历史数据和示例策略测试
 * 当前测试结果已更新为：`33 tests, 0 failures`
 
+#### 10. 回测结果 JSON 导出闭环
+
+* `BacktestResult` 增加回测上下文字段：
+  * `instrument`
+  * `interval`
+  * `initialCash`
+  * `tradeQuantity`
+* 调整 `JacksonConfig`，补齐 Java Time 序列化支持，确保 `Instant` 以 ISO-8601 字符串输出
+* 新增 `BacktestResultJsonExporter`
+* 当前可以将结构化回测结果稳定导出为 JSON，作为下一阶段 AI Research 的直接输入
+* 补充 JSON 导出测试，覆盖关键字段和时间格式
+* 当前测试结果已更新为：`35 tests, 0 failures`
+
 ### 今日问题
 
 * 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现
 * 早期路线过度强调 ClickHouse 等基础设施，偏离了当前最重要的学习与闭环目标
 * 本地 Docker 初次联调时需要确认 WSL 当前用户是否有 Docker API 权限；必要时通过提权命令访问 Docker socket
 * Sharpe Ratio 暂未实现，因为需要明确收益序列周期和年化口径，不能随便硬编码一个误导性指标
+* AI Research 目前仍缺“如何消费 JSON 结果并生成中文研究报告”的最小输入输出协议
 
 ### 下一步
 

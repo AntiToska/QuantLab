@@ -1,5 +1,7 @@
 package com.quantlab.backtest;
 
+import com.quantlab.marketdata.model.Instrument;
+import com.quantlab.marketdata.model.KlineInterval;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
@@ -11,8 +13,12 @@ import java.util.Objects;
  */
 public record BacktestResult(
         String strategyName,
+        Instrument instrument,
+        KlineInterval interval,
         Instant fromInclusive,
         Instant toExclusive,
+        BigDecimal initialCash,
+        BigDecimal tradeQuantity,
         int processedBars,
         int buySignals,
         int sellSignals,
@@ -27,8 +33,12 @@ public record BacktestResult(
         if (strategyName == null || strategyName.isBlank()) {
             throw new IllegalArgumentException("strategyName must not be blank");
         }
+        Objects.requireNonNull(instrument, "instrument must not be null");
+        Objects.requireNonNull(interval, "interval must not be null");
         Objects.requireNonNull(fromInclusive, "fromInclusive must not be null");
         Objects.requireNonNull(toExclusive, "toExclusive must not be null");
+        Objects.requireNonNull(initialCash, "initialCash must not be null");
+        Objects.requireNonNull(tradeQuantity, "tradeQuantity must not be null");
         Objects.requireNonNull(finalCash, "finalCash must not be null");
         Objects.requireNonNull(finalPosition, "finalPosition must not be null");
         Objects.requireNonNull(finalEquity, "finalEquity must not be null");
@@ -44,6 +54,12 @@ public record BacktestResult(
         }
         if (finalPosition.signum() < 0) {
             throw new IllegalArgumentException("finalPosition must not be negative");
+        }
+        if (initialCash.signum() < 0) {
+            throw new IllegalArgumentException("initialCash must not be negative");
+        }
+        if (tradeQuantity.signum() <= 0) {
+            throw new IllegalArgumentException("tradeQuantity must be positive");
         }
 
         strategyName = strategyName.trim();
