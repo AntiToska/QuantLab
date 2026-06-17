@@ -45,7 +45,8 @@ class MarketDataServiceTests {
                                         3000,
                                         15
                                 )
-                        )
+                        ),
+                        defaultResearchProperties()
                 ),
                 List.of(binanceConnector, okxConnector)
         );
@@ -90,7 +91,8 @@ class MarketDataServiceTests {
                                         3000,
                                         15
                                 )
-                        )
+                        ),
+                        defaultResearchProperties()
                 ),
                 List.of(binanceConnector, okxConnector)
         );
@@ -130,5 +132,22 @@ class MarketDataServiceTests {
         public void stop() {
             stopped = true;
         }
+    }
+
+    private QuantLabProperties.ResearchProperties defaultResearchProperties() {
+        return new QuantLabProperties.ResearchProperties(
+                new QuantLabProperties.BacktestRunProperties(
+                        false,
+                        "BINANCE",
+                        "BTCUSDT",
+                        "ONE_MINUTE",
+                        "2026-06-17T00:00:00Z",
+                        "2026-06-17T01:00:00Z",
+                        "close-price-momentum",
+                        "./output/research",
+                        "10000",
+                        "1"
+                )
+        );
     }
 }

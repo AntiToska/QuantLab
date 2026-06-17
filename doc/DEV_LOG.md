@@ -288,6 +288,18 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
   * 中文研究报告输出
 * 新增流水线测试，验证一次运行即可拿到完整研究产物
 
+#### 14. 本地研究执行器
+
+* 在 `QuantLabProperties` 中新增 `quantlab.research.backtest-run.*` 配置
+* 新增 `BacktestResearchRunner`
+* 只有显式开启 `quantlab.research.backtest-run.enabled=true` 时才会在应用启动后执行
+* 当前支持：
+  * 从配置构造 `BacktestRequest`
+  * 选择 `close-price-momentum` 策略
+  * 调用 `BacktestResearchPipeline.runAndWrite(...)`
+  * 将研究产物写到指定目录
+* 默认仍保持关闭，避免影响无数据库依赖的本地启动和测试
+
 ### 今日问题
 
 * 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现

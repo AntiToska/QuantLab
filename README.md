@@ -283,6 +283,29 @@ BacktestResult
 
 这个入口的目标是为后续真实联调提供稳定出口，而不是先引入复杂的 Web、CLI 或任务调度框架。
 
+如果你想在本地用 PostgreSQL 历史数据直接跑一次研究输出，可以开启：
+
+```yaml
+quantlab:
+  market-data:
+    persistence:
+      enabled: true
+  research:
+    backtest-run:
+      enabled: true
+      exchange: BINANCE
+      symbol: BTCUSDT
+      interval: ONE_MINUTE
+      from-inclusive: 2026-06-17T00:00:00Z
+      to-exclusive: 2026-06-17T01:00:00Z
+      strategy: close-price-momentum
+      output-directory: ./output/research
+      initial-cash: "10000"
+      trade-quantity: "1"
+```
+
+启动后会自动执行一次研究流水线，并将结果写到 `output-directory`。
+
 ---
 
 ## 本地 PostgreSQL 联调

@@ -11,7 +11,8 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "quantlab")
 public record QuantLabProperties(
-        @Valid MarketDataProperties marketData
+        @Valid MarketDataProperties marketData,
+        @Valid ResearchProperties research
 ) {
 
     /**
@@ -49,6 +50,33 @@ public record QuantLabProperties(
             boolean realClientEnabled,
             long reconnectDelayMillis,
             long heartbeatIntervalSeconds
+    ) {
+    }
+
+    /**
+     * Research 模块配置。
+     */
+    public record ResearchProperties(
+            @Valid BacktestRunProperties backtestRun
+    ) {
+    }
+
+    /**
+     * 本地研究执行入口配置。
+     * <p>
+     * 只有显式开启时才会在应用启动后自动执行回测和报告写出。
+     */
+    public record BacktestRunProperties(
+            boolean enabled,
+            String exchange,
+            String symbol,
+            String interval,
+            String fromInclusive,
+            String toExclusive,
+            String strategy,
+            String outputDirectory,
+            String initialCash,
+            String tradeQuantity
     ) {
     }
 }

@@ -38,3 +38,15 @@ quantlab:
       heartbeat-interval-seconds: 15
       symbols:
         - BTCUSDT
+  research:
+    backtest-run:
+      enabled: false
+      exchange: BINANCE
+      symbol: BTCUSDT
+      interval: ONE_MINUTE
+      from-inclusive: 2026-06-17T00:00:00Z
+      to-exclusive: 2026-06-17T01:00:00Z
+      strategy: close-price-momentum
+      output-directory: ./output/research
+      initial-cash: "10000"
+      trade-quantity: "1"

@@ -32,7 +32,8 @@ class ConfigurableBinanceWebSocketClientTests {
                                 ),
                                 new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT"), null, false, 3000, 15),
                                 new QuantLabProperties.ExchangeConnectorProperties(false, List.of("BTCUSDT"), null, false, 3000, 15)
-                        )
+                        ),
+                        defaultResearchProperties()
                 ),
                 factory,
                 scheduler,
@@ -203,6 +204,23 @@ class ConfigurableBinanceWebSocketClientTests {
             }
             return sockets.removeFirst();
         }
+    }
+
+    private QuantLabProperties.ResearchProperties defaultResearchProperties() {
+        return new QuantLabProperties.ResearchProperties(
+                new QuantLabProperties.BacktestRunProperties(
+                        false,
+                        "BINANCE",
+                        "BTCUSDT",
+                        "ONE_MINUTE",
+                        "2026-06-17T00:00:00Z",
+                        "2026-06-17T01:00:00Z",
+                        "close-price-momentum",
+                        "./output/research",
+                        "10000",
+                        "1"
+                )
+        );
     }
 
     private static final class RecordingRawWebSocket implements BinanceRawWebSocket {
