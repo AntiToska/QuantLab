@@ -272,6 +272,22 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 这意味着 `BacktestResult JSON -> 研究报告对象 -> Markdown 报告` 的最小链路已经成立
 * 补充 AI Research 报告生成和 markdown 导出测试
 
+#### 13. 统一研究流水线入口
+
+* 新增 `BacktestResearchArtifact`
+* 新增 `BacktestResearchPipeline`
+* 当前可以通过一次调用串起：
+  * `KlineBacktestEngine`
+  * `BacktestResultJsonExporter`
+  * `BacktestResearchReportGenerator`
+  * `BacktestResearchReportMarkdownExporter`
+* 这让后续真实联调时可以直接验证：
+  * 历史数据读取
+  * 回测执行
+  * JSON 导出
+  * 中文研究报告输出
+* 新增流水线测试，验证一次运行即可拿到完整研究产物
+
 ### 今日问题
 
 * 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现
