@@ -9,6 +9,7 @@ import com.quantlab.marketdata.model.Instrument;
 import com.quantlab.marketdata.model.KlineEvent;
 import com.quantlab.marketdata.model.KlineInterval;
 import com.quantlab.marketdata.model.TradeEvent;
+import com.quantlab.strategy.ClosePriceMomentumStrategy;
 import com.quantlab.strategy.KlineStrategy;
 import com.quantlab.strategy.StrategySignal;
 import java.math.BigDecimal;
@@ -38,6 +39,12 @@ class KlineBacktestEngineTests {
         assertThat(result.finalCash()).isEqualByComparingTo(new BigDecimal("9998.00"));
         assertThat(result.finalPosition()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(result.finalEquity()).isEqualByComparingTo(new BigDecimal("9998.00"));
+        assertThat(result.metrics().initialEquity()).isEqualByComparingTo(new BigDecimal("10000"));
+        assertThat(result.metrics().finalEquity()).isEqualByComparingTo(new BigDecimal("9998.00"));
+        assertThat(result.metrics().totalReturn()).isEqualByComparingTo(new BigDecimal("-0.0002"));
+        assertThat(result.metrics().maxDrawdown()).isEqualByComparingTo(new BigDecimal("0.0002"));
+        assertThat(result.metrics().executedTrades()).isEqualTo(2);
+        assertThat(result.metrics().winRate()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(strategy.events).hasSize(3);
         assertThat(historyReader.requestedInstrument).isEqualTo(new Instrument(Exchange.BINANCE, "BTCUSDT"));
     }
@@ -85,6 +92,38 @@ class KlineBacktestEngineTests {
         assertThat(result.finalCash()).isEqualByComparingTo(new BigDecimal("50"));
         assertThat(result.finalPosition()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(result.finalEquity()).isEqualByComparingTo(new BigDecimal("50"));
+        assertThat(result.metrics().executedTrades()).isZero();
+        assertThat(result.metrics().totalReturn()).isEqualByComparingTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    void shouldReturnEmptyMetricsWhenNoHistoricalKlinesExist() {
+        KlineBacktestEngine engine = new KlineBacktestEngine(new RecordingHistoryReader(List.of()));
+
+        BacktestResult result = engine.run(request(), new RecordingStrategy());
+
+        assertThat(result.processedBars()).isZero();
+        assertThat(result.finalEquity()).isEqualByComparingTo(new BigDecimal("10000"));
+        assertThat(result.metrics().initialEquity()).isEqualByComparingTo(new BigDecimal("10000"));
+        assertThat(result.metrics().finalEquity()).isEqualByComparingTo(new BigDecimal("10000"));
+        assertThat(result.metrics().totalReturn()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(result.metrics().maxDrawdown()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(result.metrics().executedTrades()).isZero();
+        assertThat(result.metrics().winRate()).isEqualByComparingTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    void closePriceMomentumStrategyShouldEmitSignalsFromPreviousClose() {
+        KlineStrategy strategy = new ClosePriceMomentumStrategy();
+
+        assertThat(strategy.onKline(kline("2026-06-17T00:00:00Z", "100", "100")))
+                .isEqualTo(StrategySignal.HOLD);
+        assertThat(strategy.onKline(kline("2026-06-17T00:01:00Z", "100", "101")))
+                .isEqualTo(StrategySignal.BUY);
+        assertThat(strategy.onKline(kline("2026-06-17T00:02:00Z", "101", "99")))
+                .isEqualTo(StrategySignal.SELL);
+        assertThat(strategy.onKline(kline("2026-06-17T00:03:00Z", "99", "99")))
+                .isEqualTo(StrategySignal.HOLD);
     }
 
     private BacktestRequest request() {

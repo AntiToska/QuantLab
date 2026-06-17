@@ -28,21 +28,22 @@ public class Portfolio {
         lastPrice = event.closePrice();
     }
 
-    public void apply(SimulatedTrade trade) {
+    public boolean apply(SimulatedTrade trade) {
         BigDecimal notional = trade.notional();
         if (trade.signal() == StrategySignal.BUY) {
             if (cash.compareTo(notional) < 0) {
-                return;
+                return false;
             }
             cash = cash.subtract(notional);
             position = position.add(trade.quantity());
-            return;
+            return true;
         }
         if (position.compareTo(trade.quantity()) < 0) {
-            return;
+            return false;
         }
         cash = cash.add(notional);
         position = position.subtract(trade.quantity());
+        return true;
     }
 
     public BigDecimal cash() {

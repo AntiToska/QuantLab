@@ -19,7 +19,8 @@ public record BacktestResult(
         int holdSignals,
         BigDecimal finalCash,
         BigDecimal finalPosition,
-        BigDecimal finalEquity
+        BigDecimal finalEquity,
+        BacktestMetrics metrics
 ) {
 
     public BacktestResult {
@@ -31,6 +32,7 @@ public record BacktestResult(
         Objects.requireNonNull(finalCash, "finalCash must not be null");
         Objects.requireNonNull(finalPosition, "finalPosition must not be null");
         Objects.requireNonNull(finalEquity, "finalEquity must not be null");
+        Objects.requireNonNull(metrics, "metrics must not be null");
         if (!fromInclusive.isBefore(toExclusive)) {
             throw new IllegalArgumentException("fromInclusive must be before toExclusive");
         }

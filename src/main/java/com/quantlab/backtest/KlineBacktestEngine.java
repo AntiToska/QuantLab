@@ -41,6 +41,7 @@ public class KlineBacktestEngine {
         int holdSignals = 0;
         SimulatedBroker broker = new SimulatedBroker();
         Portfolio portfolio = new Portfolio(request.initialCash());
+        BacktestMetricsCollector metricsCollector = new BacktestMetricsCollector(request.initialCash());
         for (KlineEvent event : events) {
             portfolio.mark(event);
             StrategySignal signal = strategy.onKline(event);
@@ -54,9 +55,17 @@ public class KlineBacktestEngine {
             }
             broker.createOrder(event, signal, request.tradeQuantity())
                     .map(broker::execute)
-                    .ifPresent(portfolio::apply);
+                    .ifPresent(trade -> {
+                        if (portfolio.apply(trade)) {
+                            metricsCollector.recordTrade(trade);
+                        }
+                    });
+            metricsCollector.recordEquity(portfolio.equity());
         }
 
+        BacktestMetrics metrics = events.isEmpty()
+                ? BacktestMetrics.empty(request.initialCash())
+                : metricsCollector.toMetrics();
         return new BacktestResult(
                 strategy.name(),
                 request.fromInclusive(),
@@ -67,7 +76,8 @@ public class KlineBacktestEngine {
                 holdSignals,
                 portfolio.cash(),
                 portfolio.position(),
-                portfolio.equity()
+                portfolio.equity(),
+                metrics
         );
     }
 }

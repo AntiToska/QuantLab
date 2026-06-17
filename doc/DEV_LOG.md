@@ -219,14 +219,32 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 
 * 当前测试结果：`31 tests, 0 failures`
 
+#### 9. Strategy + Metrics 最小推进
+
+* 新增 `BacktestMetrics`，为回测结果提供结构化指标字段
+* 新增 `BacktestMetricsCollector`，集中计算权益曲线、最大回撤和成交统计
+* `BacktestResult` 增加 `metrics` 字段，后续可直接作为 AI Research 输入
+* 当前已支持的基础指标：
+  * 初始权益
+  * 最终权益
+  * 总收益率
+  * 最大回撤
+  * 实际成交数
+  * 胜率
+* 新增 `ClosePriceMomentumStrategy` 示例策略
+* 调整 `Portfolio.apply` 返回成交是否真正生效，避免现金不足或持仓不足时误计入成交指标
+* 补充回测指标、空历史数据和示例策略测试
+* 当前测试结果已更新为：`33 tests, 0 failures`
+
 ### 今日问题
 
 * 之前的 README 与 Agent Guide 在技术选型上存在冲突，容易误导后续实现
 * 早期路线过度强调 ClickHouse 等基础设施，偏离了当前最重要的学习与闭环目标
 * 本地 Docker 初次联调时需要确认 WSL 当前用户是否有 Docker API 权限；必要时通过提权命令访问 Docker socket
+* Sharpe Ratio 暂未实现，因为需要明确收益序列周期和年化口径，不能随便硬编码一个误导性指标
 
 ### 下一步
 
-* 补齐回测结果结构化输出和基础 Metrics
+* 明确 Sharpe Ratio 的计算口径并补齐指标
 * 评估 AI Research 最小输入输出协议
 * 开启真实 Binance WebSocket 后，验证 `Trade / Kline` 能持续写入本地 PostgreSQL
