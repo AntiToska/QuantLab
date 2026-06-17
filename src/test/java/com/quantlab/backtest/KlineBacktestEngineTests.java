@@ -1,0 +1,156 @@
+package com.quantlab.backtest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import com.quantlab.marketdata.history.MarketDataHistoryReader;
+import com.quantlab.marketdata.model.Exchange;
+import com.quantlab.marketdata.model.Instrument;
+import com.quantlab.marketdata.model.KlineEvent;
+import com.quantlab.marketdata.model.KlineInterval;
+import com.quantlab.marketdata.model.TradeEvent;
+import com.quantlab.strategy.KlineStrategy;
+import com.quantlab.strategy.StrategySignal;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+
+class KlineBacktestEngineTests {
+
+    @Test
+    void shouldDriveStrategyWithHistoricalKlines() {
+        RecordingHistoryReader historyReader = new RecordingHistoryReader(List.of(
+                kline("2026-06-17T00:00:00Z", "100", "101"),
+                kline("2026-06-17T00:01:00Z", "101", "99"),
+                kline("2026-06-17T00:02:00Z", "99", "99")
+        ));
+        KlineBacktestEngine engine = new KlineBacktestEngine(historyReader);
+        RecordingStrategy strategy = new RecordingStrategy();
+
+        BacktestResult result = engine.run(request(), strategy);
+
+        assertThat(result.processedBars()).isEqualTo(3);
+        assertThat(result.buySignals()).isEqualTo(1);
+        assertThat(result.sellSignals()).isEqualTo(1);
+        assertThat(result.holdSignals()).isEqualTo(1);
+        assertThat(strategy.events).hasSize(3);
+        assertThat(historyReader.requestedInstrument).isEqualTo(new Instrument(Exchange.BINANCE, "BTCUSDT"));
+    }
+
+    @Test
+    void shouldRejectNullStrategySignal() {
+        KlineBacktestEngine engine = new KlineBacktestEngine(new RecordingHistoryReader(List.of(
+                kline("2026-06-17T00:00:00Z", "100", "101")
+        )));
+
+        assertThatThrownBy(() -> engine.run(request(), new NullSignalStrategy()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("signal");
+    }
+
+    @Test
+    void shouldRejectInvalidBacktestRequestRange() {
+        assertThatThrownBy(() -> new BacktestRequest(
+                new Instrument(Exchange.BINANCE, "BTCUSDT"),
+                KlineInterval.ONE_MINUTE,
+                Instant.parse("2026-06-17T00:00:00Z"),
+                Instant.parse("2026-06-17T00:00:00Z")
+        )).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("fromInclusive");
+    }
+
+    private BacktestRequest request() {
+        return new BacktestRequest(
+                new Instrument(Exchange.BINANCE, "BTCUSDT"),
+                KlineInterval.ONE_MINUTE,
+                Instant.parse("2026-06-17T00:00:00Z"),
+                Instant.parse("2026-06-17T00:03:00Z")
+        );
+    }
+
+    private KlineEvent kline(String openTime, String openPrice, String closePrice) {
+        Instant open = Instant.parse(openTime);
+        BigDecimal openValue = new BigDecimal(openPrice);
+        BigDecimal closeValue = new BigDecimal(closePrice);
+        BigDecimal high = openValue.max(closeValue);
+        BigDecimal low = openValue.min(closeValue);
+        return new KlineEvent(
+                new Instrument(Exchange.BINANCE, "BTCUSDT"),
+                open.plusSeconds(59),
+                open.plusSeconds(60),
+                KlineInterval.ONE_MINUTE,
+                open,
+                open.plusSeconds(59),
+                openValue,
+                high,
+                low,
+                closeValue,
+                new BigDecimal("10.0"),
+                true
+        );
+    }
+
+    private static final class RecordingHistoryReader implements MarketDataHistoryReader {
+
+        private final List<KlineEvent> klines;
+        private Instrument requestedInstrument;
+
+        private RecordingHistoryReader(List<KlineEvent> klines) {
+            this.klines = List.copyOf(klines);
+        }
+
+        @Override
+        public List<TradeEvent> loadTrades(Instrument instrument, Instant fromInclusive, Instant toExclusive) {
+            return List.of();
+        }
+
+        @Override
+        public List<KlineEvent> loadKlines(
+                Instrument instrument,
+                KlineInterval interval,
+                Instant fromInclusive,
+                Instant toExclusive
+        ) {
+            this.requestedInstrument = instrument;
+            return klines;
+        }
+    }
+
+    private static final class RecordingStrategy implements KlineStrategy {
+
+        private final List<KlineEvent> events = new ArrayList<>();
+
+        @Override
+        public String name() {
+            return "recording";
+        }
+
+        @Override
+        public StrategySignal onKline(KlineEvent event) {
+            events.add(event);
+            int comparison = event.closePrice().compareTo(event.openPrice());
+            if (comparison > 0) {
+                return StrategySignal.BUY;
+            }
+            if (comparison < 0) {
+                return StrategySignal.SELL;
+            }
+            return StrategySignal.HOLD;
+        }
+    }
+
+    private static final class NullSignalStrategy implements KlineStrategy {
+
+        @Override
+        public String name() {
+            return "null-signal";
+        }
+
+        @Override
+        public StrategySignal onKline(KlineEvent event) {
+            return null;
+        }
+    }
+}

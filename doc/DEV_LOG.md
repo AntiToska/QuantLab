@@ -158,6 +158,10 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 * 新增 `JdbcMarketDataHistoryReader`，支持按交易标的和时间窗口读取 `Trade / Kline`
 * 为后续 Backtest Core 提供最小历史数据输入入口
 * 当前测试结果已更新为：`27 tests, 0 failures`
+* 新增 `KlineStrategy` 和 `StrategySignal`，建立最小策略接口
+* 新增 `BacktestRequest`、`BacktestResult` 和 `KlineBacktestEngine`
+* 打通从历史 K 线读取到策略逐根执行的最小回测事件循环
+* 当前测试结果已更新为：`30 tests, 0 failures`
 
 ### 今日问题
 
@@ -166,5 +170,5 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 
 ### 下一步
 
-* 开始为 Backtest Core 设计最小历史数据加载与事件回放入口
+* 补齐 Broker Simulator 和 Portfolio Engine 的最小模型
 * 评估 AI Research 最小输入输出协议

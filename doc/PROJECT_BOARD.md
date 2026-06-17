@@ -146,8 +146,8 @@
 
 任务：
 
-* [ ] 历史数据加载
-* [ ] 回测事件循环
+* [x] 历史数据加载
+* [x] 回测事件循环
 * [ ] Broker Simulator
 * [ ] Portfolio Engine
 
@@ -261,8 +261,8 @@
 ## Backtest Core
 
 * [x] Market Data 历史读取入口
-* [ ] Backtest 历史数据加载器
-* [ ] 事件驱动回测循环
+* [x] Backtest 历史数据加载器
+* [x] 事件驱动回测循环
 * [ ] Broker Simulator
 * [ ] Position / Portfolio 演算
 * [ ] 回测结果结构化输出
@@ -271,8 +271,8 @@
 
 ## Strategy + Metrics
 
-* [ ] Strategy Interface
-* [ ] Signal Model
+* [x] Kline Strategy Interface
+* [x] Signal Model
 * [ ] 简单均线策略
 * [ ] Momentum 策略
 * [ ] 绩效指标计算
