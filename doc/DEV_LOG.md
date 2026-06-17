@@ -470,6 +470,21 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 
 * 当前测试结果：`43 tests, 0 failures`
 
+#### 5. Review 交接材料整理
+
+* 新增 `doc/HANDOFF_REVIEW.md`
+* 将当前仓库整理为可 review 状态，不再继续扩展业务功能
+* 交接文档主要覆盖：
+  * 当前阶段结论
+  * 建议 review 顺序
+  * 主链路阅读地图
+  * 本轮关键新增能力
+  * review 时建议重点判断的问题
+* 目的不是新增设计，而是帮助后续 review 聚焦：
+  * 模块边界
+  * 配置收敛
+  * Phase 2 承接方式
+
 ### 今日问题
 
 * 当前托管执行环境默认不能直接访问本地 PostgreSQL，真实数据库联调仍需要在提权或用户终端环境下完成
@@ -477,6 +492,7 @@ mvn -Dmaven.repo.local=/home/antitoska/workspace/QuantLab/.m2/repository test
 
 ### 下一步
 
+* 先完成本轮 review，并根据 review 结果决定是否做小范围收敛修正
 * 继续补强 `Phase 2 - Backtest Core` 的研究运行稳定性
 * 收敛策略执行和指标输出边界，避免回测入口继续膨胀
 * 为后续 `Strategy + Metrics` / `AI Research` 留出更稳定的输入协议
